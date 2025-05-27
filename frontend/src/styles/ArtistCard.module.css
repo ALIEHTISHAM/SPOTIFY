@@ -1,0 +1,35 @@
+.artistCard {
+  background: #181818;
+  border-radius: 8px;
+  padding: 1rem;
+  transition: background-color 0.3s;
+  text-align: center;
+}
+
+.artistCard:hover {
+  background: #282828;
+}
+
+.imageContainer {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+
+.artistImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.artistName {
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+} 

@@ -1,0 +1,348 @@
+.artist-dashboard {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  color: #333;
+  margin-bottom: 100px;
+}
+
+.artist-dashboard h1 {
+  font-size: 2.5rem;
+  color: #1a1a1a;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.artist-dashboard h2 {
+  font-size: 1.8rem;
+  color: #2c3e50;
+  margin-bottom: 1.5rem;
+}
+
+/* Upload Section */
+.upload-section {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 3rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.upload-form {
+  display: grid;
+  gap: 1.5rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group label {
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.form-group input[type="text"],
+.form-group textarea {
+  padding: 0.8rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+.form-group input[type="text"]:focus,
+.form-group textarea:focus {
+  border-color: #3498db;
+  outline: none;
+}
+
+.form-group input[type="file"] {
+  padding: 0.5rem;
+  border: 2px dashed #e0e0e0;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.form-group input[type="file"]:hover {
+  border-color: #3498db;
+}
+
+button[type="submit"] {
+  background-color: #3498db;
+  color: white;
+  padding: 1rem 2rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button[type="submit"]:hover {
+  background-color: #2980b9;
+}
+
+button[type="submit"]:disabled {
+  background-color: #bdc3c7;
+  cursor: not-allowed;
+}
+
+/* Tracks Section */
+.tracks-section {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.tracks-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.track-card {
+  display: flex;
+  background: #ffffff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+  padding: 1rem;
+  align-items: center;
+}
+
+.track-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+}
+
+.track-cover-container {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  flex-shrink: 0;
+  margin-right: 1rem;
+  overflow: hidden;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+}
+
+.track-cover {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+}
+
+.track-card:hover .track-cover {
+  transform: scale(1.02);
+}
+
+.track-info {
+  flex-grow: 1;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.track-info h3 {
+  font-size: 1.1rem;
+  margin-bottom: 0.2rem;
+}
+
+.track-info .genre {
+  font-size: 0.85rem;
+  margin-bottom: 0.5rem;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.status-pending {
+  background-color: #f1c40f;
+  color: #fff;
+}
+
+.status-approved {
+  background-color: #2ecc71;
+  color: #fff;
+}
+
+.status-rejected {
+  background-color: #e74c3c;
+  color: #fff;
+}
+
+.admin-feedback {
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  font-size: 0.85rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .artist-dashboard {
+    padding: 1rem;
+  }
+
+  .tracks-grid {
+    gap: 0.8rem;
+  }
+  
+  .track-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .track-cover-container {
+    width: 100px;
+    height: 100px;
+    margin-right: 0;
+    margin-bottom: 0.8rem;
+  }
+
+  .track-info {
+    width: 100%;
+  }
+
+  .upload-section,
+  .tracks-section {
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .artist-dashboard h1 {
+    font-size: 2rem;
+  }
+
+  /* Tracks grid and card already handled by 768px media query */
+}
+
+/* Music Player Styles */
+.music-player {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #282828;
+  color: white;
+  padding: 15px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+}
+
+.player-info {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.player-info .track-cover-container {
+  width: 60px;
+  height: 60px;
+  margin-right: 0;
+}
+
+.player-info .track-cover {
+  border-radius: 4px;
+}
+
+.track-details h3 {
+  margin: 0;
+  font-size: 1em;
+  color: white;
+}
+
+.track-details p {
+  margin: 5px 0 0 0;
+  color: #b3b3b3;
+  font-size: 0.9em;
+}
+
+.player-controls {
+  flex: 1;
+  max-width: 600px;
+  margin: 0 20px;
+}
+
+.progress-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.progress-slider {
+  width: 100%;
+  height: 4px;
+  -webkit-appearance: none;
+  background: #535353;
+  border-radius: 2px;
+  outline: none;
+}
+
+.progress-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 12px;
+  height: 12px;
+  background: #1db954;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.time-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8em;
+  color: #b3b3b3;
+}
+
+/* Play Button Styles */
+.play-button {
+  background: #1db954;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: bold;
+  margin-top: 10px;
+  transition: background-color 0.2s;
+}
+
+.play-button:hover {
+  background: #1ed760;
+}
+
+.play-button.playing {
+  background: #ff4444;
+}
+
+.play-button.playing:hover {
+  background: #ff6666;
+}
+
+/* Hide the default audio element */
+audio {
+  display: none;
+} 

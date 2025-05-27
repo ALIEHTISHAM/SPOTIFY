@@ -1,0 +1,794 @@
+/* Reset and base styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #000000; /* Light gray background */
+  color: #333;
+}
+
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content {
+  flex: 1;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  min-height: calc(100vh - 64px); /* Adjust height calculation */
+  display: flex;
+  flex-direction: column;
+}
+
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* Navbar styles */
+.navbar {
+  background-color: #1a1a1a;
+  padding: 1rem 0;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.navbar .container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.navbar-brand {
+  color: #fff;
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.navbar-menu {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  margin-right: 1rem;
+}
+
+.search-input {
+  padding: 0.5rem;
+  border: 1px solid #333;
+  border-radius: 4px 0 0 4px;
+  background-color: #2a2a2a;
+  color: #fff;
+  width: 200px;
+}
+
+.search-button {
+  padding: 0.5rem 1rem;
+  background-color: #1db954;
+  color: #fff;
+  border: none;
+  border-radius: 0 4px 4px 0;
+  cursor: pointer;
+}
+
+.navbar-item {
+  color: #fff;
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.navbar-item:hover {
+  background-color: #333;
+}
+
+.auth-buttons {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.artist-link {
+  color: #1db954;
+  font-weight: 500;
+  background-color: rgba(29, 185, 84, 0.1);
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.artist-link:hover {
+  background-color: rgba(29, 185, 84, 0.2);
+}
+
+.btn {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.btn-secondary {
+  background-color: #333;
+  color: #fff;
+}
+
+.btn-secondary:hover {
+  background-color: #444;
+}
+
+/* Auth container styles */
+.auth-container {
+  display: flex;
+  max-width: 900px;
+  margin: 4rem auto;
+  background-color: #282828;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  transition: transform 0.6s ease-in-out;
+  width: 100%;
+  color: #fff;
+}
+
+.auth-container .art-section,
+.auth-container .form-section {
+  flex: 1;
+  padding: 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.auth-container .art-section {
+  background: url('../../public/assets/emineml.jpg') no-repeat 10% center/cover;
+  color: white;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.6s ease-in-out;
+}
+
+.auth-container.register-mode .art-section {
+  transform: translateX(0%);
+}
+
+.auth-container.login-mode .art-section {
+  transform: translateX(100%);
+  
+}
+
+.auth-container .form-section {
+  transition: transform 0.6s ease-in-out;
+  padding: 3rem;
+  display: flex;
+  flex-direction: column;
+  background-color: #1e1e1e;
+  color: #fff; /* White text for form section */
+  width: 50%; /* Give the form section a fixed width */
+  flex: none; /* Prevent flex from overriding width */
+  min-height: 665px;
+}
+
+.auth-container.register-mode .form-section {
+  transform: translateX(0%);
+}
+
+.auth-container.login-mode .form-section {
+  transform: translateX(-100%);
+}
+
+.auth-container .auth-form {
+  width: 100%;
+  max-width: 400px;
+}
+
+.auth-container .auth-form h2 {
+  margin-bottom: 2rem;
+  color: #fff;
+  font-size: 2rem;
+}
+
+.auth-container .form-group {
+  margin-bottom: 1.5rem;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.auth-container .form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #fff;
+  text-align: left;
+}
+
+.auth-container .form-control {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #333;
+  border-radius: 4px;
+  background-color: #2a2a2a;
+  color: #fff;
+  font-size: 1rem;
+}
+
+.auth-container .form-control:focus {
+  outline: none;
+  border-color: #1db954;
+  box-shadow: 0 0 0 2px rgba(29, 185, 84, 0.2);
+}
+
+.auth-container .auth-links {
+  margin-top: 1.5rem;
+  text-align: center;
+}
+
+.auth-container .auth-links p {
+  margin: 0.5rem 0;
+}
+
+.auth-container .auth-links a {
+  color: #1db954;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.auth-container .auth-links a:hover {
+  text-decoration: underline;
+}
+
+.auth-container .error-message {
+  background-color: rgba(255, 0, 0, 0.1);
+  color: #ff4444;
+  padding: 1rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.auth-container.login-mode {
+  background: url('../../public/assets/emineml.jpg') no-repeat 10% 10%/cover;
+}
+
+/* Home page styles - Inspired by the new image */
+.home .hero-section {
+  position: relative;
+  height: 500px;
+  background: url('../../public/assets/eminem.jpg') no-repeat center center; /* Keep no-repeat center center */
+  background-size: cover; /* Change back to cover to fill the space */
+  color: white;
+}
+
+.home .hero-content {
+  position: absolute; /* Position hero-content absolutely within hero-section */
+  bottom: 3rem; /* Position from the bottom */
+  right: 6rem; /* Position from the right */
+  z-index: 1;
+  display: flex; /* Use flexbox for buttons */
+  gap: 1.5rem;
+  align-items: center;
+}
+
+/* Remove individual hero-text and cta-buttons flex styles as they are now combined */
+.home .hero-text {
+    /* Keep text aligned to the left */
+    text-align: left;
+}
+
+.home .hero-text h1 {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  color: white;
+}
+
+.home .hero-text p {
+  font-size: 1.5rem;
+  margin-bottom: 2rem;
+  color: #ccc; /* Lighter color for subtitle */
+}
+
+.home .cta-buttons { /* This div now acts as the flex container for buttons */
+  display: flex;
+  gap: 1.5rem;
+  align-items: center; /* Align buttons vertically in the middle */
+  /* Remove positioning styles as it's handled by hero-content */
+}
+
+.home .cta-buttons .btn {
+    width: auto; /* Override the default button width */
+    padding: 0.8rem 2rem;
+    font-size: 1rem;
+    border-radius: 25px; /* Rounded buttons */
+    /* Ensure buttons are displayed inline-flex for icon */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.home .cta-buttons .btn-primary {
+    background-color: #1db954;
+}
+
+.home .cta-buttons .btn-secondary {
+    background-color: #282828; /* Darker background for login button */
+    color: white;
+    border: none; /* Ensure no border */
+}
+
+.home .content-sections {
+  background-color: #121212; /* Dark background for content sections */
+  color: white;
+  padding: 2rem 6rem; /* Padding to match the hero-section's left padding */
+}
+
+.home .discover-artists-section,
+.home .listen-music-section {
+  margin-bottom: 3rem;
+}
+
+.home .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.home .section-header h2 {
+  font-size: 1.8rem;
+  color: white;
+  margin: 0; /* Remove default margin */
+}
+
+.home .see-all-link {
+  color: #bbb;
+  text-decoration: none;
+  font-size: 1rem;
+  transition: color 0.3s ease;
+}
+
+.home .see-all-link:hover {
+  color: white;
+}
+
+.home .artists-grid,
+.home .music-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Adjust column size as needed */
+  gap: 1.5rem;
+}
+
+.home .artist-card-placeholder,
+.home .music-item-placeholder {
+  background-color: #282828; /* Darker background for cards */
+  border-radius: 8px;
+  padding: 1rem;
+  text-align: center;
+}
+
+.home .cover-placeholder {
+  width: 100%;
+  height: 150px; /* Placeholder for album/artist cover */
+  background-color: #555; /* Gray placeholder color */
+  border-radius: 4px;
+  margin-bottom: 0.8rem;
+}
+
+.home .title-placeholder {
+  background-color: #555; /* Gray placeholder color */
+  height: 1em;
+  width: 80%;
+  margin: 0.5rem auto;
+  border-radius: 4px;
+}
+
+.home .artist-placeholder {
+  background-color: #555; /* Gray placeholder color */
+  height: 0.8em;
+  width: 60%;
+  margin: 0.5rem auto;
+  border-radius: 4px;
+}
+
+/* Style for the play icon placeholder */
+.home .cta-buttons .btn-primary .play-icon-placeholder {
+    font-size: 1.2rem;
+    margin-right: 0.5rem; /* Space between icon and text */
+}
+
+/* Dashboard styles */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+}
+
+/* Profile styles */
+.profile-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.info-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.info-group label {
+  font-weight: 500;
+  color: #666;
+}
+
+.button-group {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+/* Not found page */
+.not-found {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 64px);
+  text-align: center;
+}
+
+.not-found h1 {
+  font-size: 6rem;
+  color: #1db954;
+  margin-bottom: 1rem;
+}
+
+/* Utility classes */
+/* .container remains defined above */
+
+.btn {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.btn-primary {
+  background-color: #1db954;
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #1ed760;
+}
+
+.btn-secondary {
+  background-color: #282828;
+  color: white;
+}
+
+.btn-secondary:hover {
+  background-color: #333;
+}
+
+/* Form styles */
+/* .form-group remains defined above */
+/* .form-control remains defined above */
+
+/* .form-control:focus remains defined above */
+
+/* Card styles */
+.card {
+  background: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Error message */
+/* .error-message remains defined above */
+
+/* Success message */
+/* .success-message remains defined above */
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .main-content {
+    padding: 0; /* Remove padding on small screens */
+  }
+
+  .container {
+      padding: 0 1rem; /* Add padding back to container */
+  }
+
+  .navbar-menu {
+    display: none;
+  }
+
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .auth-container {
+    flex-direction: column;
+    margin: 2rem auto;
+  }
+
+  .auth-container.register-mode .art-section {
+      transform: translateY(0%);
+  }
+
+ .auth-container.login-mode .art-section {
+  transform: translateX(100%); /* This controls the sliding animation */
+  background-position: 80% 50% center; /* Add or modify this line */
+}
+
+   .auth-container.register-mode .form-section {
+      transform: translateY(0%);
+  }
+
+  .auth-container.login-mode .form-section {
+      transform: translateY(-100%);
+  }
+
+  /* Home page responsive styles */
+  .home .hero-section {
+    height: 400px; /* Adjust height for smaller screens */
+    padding-left: 2rem; /* Adjust padding */
+    justify-content: center; /* Center content vertically */
+  }
+
+  .home .hero-text h1 {
+    font-size: 2.5rem;
+  }
+
+  .home .hero-text p {
+    font-size: 1.2rem;
+  }
+
+  .home .cta-buttons {
+    flex-direction: column; /* Stack buttons vertically */
+    gap: 1rem;
+  }
+
+  .home .cta-buttons .btn {
+      width: 100%; /* Make buttons full width */
+  }
+
+  .home .content-sections {
+    padding: 2rem 1rem; /* Adjust padding */
+  }
+
+  .home .section-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+  }
+
+  .home .section-header h2 {
+      font-size: 1.5rem;
+  }
+
+  .home .see-all-link {
+      align-self: flex-end; /* Align See All link to the right */
+  }
+
+  .home .artists-grid,
+  .home .music-grid {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); /* Adjust column size */
+    gap: 1rem;
+  }
+
+  .home .artist-card-placeholder,
+  .home .music-item-placeholder {
+      padding: 0.8rem;
+  }
+
+  .home .cover-placeholder {
+      height: 100px; /* Adjust cover placeholder height */
+  }
+}
+
+/* Home Page Styles */
+.home .discover-artists-section {
+  padding: 40px 20px;
+  background-color: #f8f8f8;
+}
+
+.home .discover-artists-section h2 {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #333;
+}
+
+.home .artists-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 20px;
+}
+
+.home .artist-card-placeholder {
+  width: 100%;
+  padding-top: 100%; /* Creates a square aspect ratio */
+  background-color: #ddd;
+  border-radius: 8px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Basic styling for the listen music section */
+.home .listen-music-section {
+  padding: 40px 20px;
+}
+
+.home .listen-music-section .section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.home .listen-music-section h2 {
+    color: #333;
+}
+
+.home .listen-music-section .see-all-link {
+  text-decoration: none;
+  color: #007bff;
+  font-weight: bold;
+}
+
+.home .music-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 20px;
+}
+
+.home .music-item-placeholder {
+    background-color: #eee;
+    border-radius: 8px;
+    padding: 10px;
+    text-align: center;
+}
+
+.home .music-item-placeholder .cover-placeholder {
+    width: 100%;
+    padding-top: 100%;
+    background-color: #ccc;
+    border-radius: 4px;
+    margin-bottom: 8px;
+}
+
+.home .music-item-placeholder .title-placeholder {
+    height: 14px;
+    background-color: #bbb;
+    margin-bottom: 4px;
+    border-radius: 2px;
+}
+
+.home .music-item-placeholder .artist-placeholder {
+    height: 12px;
+    background-color: #bbb;
+    width: 80%;
+    margin: 0 auto;
+    border-radius: 2px;
+}
+
+.home .music-item-card {
+    background-color: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    text-align: center;
+    padding-bottom: 10px; /* Space below text */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease-in-out;
+}
+
+.home .music-item-card:hover {
+    transform: translateY(-5px);
+}
+
+.home .music-item-card .item-cover-placeholder {
+    width: 100%;
+    padding-top: 100%; /* Creates a square aspect ratio */
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 8px;
+}
+
+.home .music-item-card .item-cover-placeholder img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px 8px 0 0; /* Top corners rounded */
+}
+
+.home .music-item-card .item-title {
+    font-size: 0.9em;
+    color: #333;
+    margin: 0 5px 4px 5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: bold;
+}
+
+.home .music-item-card .item-artist {
+    font-size: 0.8em;
+    color: #666;
+    margin: 0 5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Footer Styles */
+.footer {
+  background-color: #333;
+  color: #fff;
+  padding: 20px 0;
+  text-align: center;
+  margin-top: auto; /* Pushes the footer to the bottom */
+}
+
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.footer p {
+  margin: 0;
+  font-size: 0.9em;
+}
+
+/* Add styles for the show password checkbox and label within form-group */
+.auth-container .form-group input[type="checkbox"] {
+  margin-right: 0.5rem;
+}
+
+.auth-container .form-group label[for^="showPassword"] {
+  display: inline-block; /* Make label inline to sit next to checkbox */
+  margin-bottom: 0;
+  font-weight: normal;
+  color: #bbb; /* Adjust color if needed */
+} 

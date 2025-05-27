@@ -1,0 +1,83 @@
+.admin-login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  /* Assuming a background color or gradient similar to your site's non-login pages */
+  background-color: #f4f4f4; /* Example light background */
+  padding: 1rem;
+}
+
+.admin-login-form {
+  background-color: #ffffff; /* White background like typical login forms */
+  padding: 2rem;
+  border-radius: 8px; /* Rounded corners */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  width: 100%;
+  max-width: 400px; /* Standard form width */
+  text-align: center; /* Center title and buttons */
+}
+
+.admin-login-form h2 {
+  margin-bottom: 1.8rem; /* Spacing below title */
+  color: #333; /* Dark text */
+  font-size: 1.6rem; /* Standard title size */
+}
+
+.form-group {
+  margin-bottom: 1.2rem; /* Spacing between form groups */
+  text-align: left; /* Align labels and inputs */
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem; /* Spacing below label */
+  color: #555;
+  font-weight: 500;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 0.8rem; /* Standard input padding */
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.2);
+}
+
+button[type="submit"] {
+  width: 100%;
+  padding: 0.9rem; /* Standard button padding */
+  /* A standard blue gradient for buttons */
+  background: linear-gradient(to right, #007bff, #00bfff);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 1.5rem; /* Spacing above button */
+}
+
+button[type="submit"]:hover {
+  background: linear-gradient(to right, #0069d9, #0090ff);
+}
+
+button[type="submit"]:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.error-message {
+  color: #dc3545;
+  margin-top: 1.5rem;
+  text-align: center;
+  font-size: 0.9rem;
+} 

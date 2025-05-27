@@ -1,0 +1,41 @@
+.cancel-subscription {
+  margin: 20px 0;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  max-width: 400px;
+}
+
+.cancel-subscription h3 {
+  margin-top: 0;
+  color: #333;
+  font-size: 1.2rem;
+}
+
+.cancel-note {
+  margin: 10px 0;
+  color: #666;
+}
+
+.cancel-button {
+  background-color: #ff4444;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  font-weight: 500;
+  margin-top: 15px;
+}
+
+.cancel-button:hover {
+  background-color: #cc0000;
+}
+
+.cancel-subscription-loading {
+  padding: 20px;
+  text-align: center;
+  color: #666;
+} 
