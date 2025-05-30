@@ -17,11 +17,10 @@ A full-stack music streaming platform with user, artist, and admin roles.
 ## Project Structure
 
 ```
-```
 music-streaming-platform/
 ├── frontend/          # React frontend application
 └── backend/           # Node.js/Express backend server
-```
+
 ```
 ## Prerequisites
 
