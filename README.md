@@ -1,3 +1,7 @@
+
+
+```markdown
+```
 # Music Streaming Platform
 
 A full-stack music streaming platform with user, artist, and admin roles.
@@ -16,8 +20,8 @@ A full-stack music streaming platform with user, artist, and admin roles.
 music-streaming-platform/
 ├── frontend/          # React frontend application
 └── backend/           # Node.js/Express backend server
-```
 
+```
 ## Prerequisites
 
 - Node.js (v14 or higher)
@@ -50,6 +54,16 @@ music-streaming-platform/
    ```bash
    npm run dev
    ```
+
+### Stripe Webhook Setup
+
+To test Stripe webhooks locally, use the Stripe CLI to forward events to your local backend server. Run the following command in your terminal:
+
+```bash
+.\stripe.exe listen --forward-to localhost:5000/api/subscription/webhook
+```
+
+This will forward any Stripe event (such as successful payments or subscription updates) to your local webhook endpoint.
 
 ### Frontend Setup
 
@@ -108,4 +122,6 @@ music-streaming-platform/
 
 ## License
 
-MIT 
+MIT
+```
+
