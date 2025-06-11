@@ -126,6 +126,10 @@ const BrowsePage = () => {
     } else {
       setCurrentTrack(track);
       setIsPlaying(true);
+      // Add a small delay to ensure the audio element is ready
+      setTimeout(() => {
+        audioRef.current.play();
+      }, 100);
     }
   };
 
