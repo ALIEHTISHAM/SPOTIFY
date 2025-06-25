@@ -4,20 +4,17 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useSubscription } from '../context/SubscriptionContext';
 import { useAuth } from '../context/AuthContext';
 import '../styles/BrowsePage.css';
+import AudioPlayer from '../components/AudioPlayer';
 
 const BrowsePage = () => {
+  console.log('BrowsePage rendered');
   const { hasSubscription, createCheckoutSession, loading: subscriptionLoading, subscriptionDetails } = useSubscription();
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const [tracks, setTracks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [currentTrack, setCurrentTrack] = useState(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(0);
-  const [volume, setVolume] = useState(1);
-  const audioRef = useRef(null);
+  const [selectedTrack, setSelectedTrack] = useState(null);
   const location = useLocation();
 
   // Filter states
@@ -105,6 +102,7 @@ const BrowsePage = () => {
     window.history.replaceState({}, '', '/browse');
   };
 
+  // Update play logic to only set selectedTrack
   const handlePlay = (track) => {
     if (!hasSubscription) {
       if (subscriptionDetails?.status === 'cancelled') {
@@ -114,48 +112,7 @@ const BrowsePage = () => {
       }
       return;
     }
-
-    console.log('Playing track:', track);
-    if (currentTrack?._id === track._id) {
-      if (isPlaying) {
-        audioRef.current.pause();
-      } else {
-        audioRef.current.play();
-      }
-      setIsPlaying(!isPlaying);
-    } else {
-      setCurrentTrack(track);
-      setIsPlaying(true);
-      // Add a small delay to ensure the audio element is ready
-      setTimeout(() => {
-        audioRef.current.play();
-      }, 100);
-    }
-  };
-
-  const handleTimeUpdate = () => {
-    setCurrentTime(audioRef.current.currentTime);
-  };
-
-  const handleLoadedMetadata = () => {
-    setDuration(audioRef.current.duration);
-  };
-
-  const handleSeek = (e) => {
-    const time = e.target.value;
-    setCurrentTime(time);
-    audioRef.current.currentTime = time;
-  };
-
-  const formatTime = (time) => {
-    const minutes = Math.floor(time / 60);
-    const seconds = Math.floor(time % 60);
-    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
-  };
-
-  const handleVolumeChange = (e) => {
-    setVolume(e.target.value);
-    audioRef.current.volume = e.target.value;
+    setSelectedTrack(track);
   };
 
   const handleSubscribeClick = () => {
@@ -237,14 +194,14 @@ const BrowsePage = () => {
       <div className="tracks-section">
         <div className="tracks-grid">
           {filteredTracks.map((track, index) => (
-            <div key={track._id} className="track-card">
+            <div
+              key={track._id}
+              className={`track-card ${selectedTrack?._id === track._id ? 'playing' : ''}`}
+              onClick={() => handlePlay(track)}
+              style={{ cursor: 'pointer' }}
+            >
               <div className="track-number">{index + 1}</div>
-              <button
-                className={`play-button ${currentTrack?._id === track._id && isPlaying ? 'playing' : ''}`}
-                onClick={() => handlePlay(track)}
-              >
-                {currentTrack?._id === track._id && isPlaying ? '❚❚' : '▶'}
-              </button>
+              <span className="play-icon">▶</span>
               <div className="track-cover-container">
                 <img
                   src={`http://localhost:5000/${track.coverImage}`}
@@ -263,67 +220,14 @@ const BrowsePage = () => {
       </div>
 
       {/* Music Player - Only shown if a track is selected (hasSubscription check is in handlePlay) */}
-      {currentTrack && (
-        <div className="music-player">
-          <div className="player-info">
-            <div className="track-cover-container">
-              <img 
-                src={`http://localhost:5000/${currentTrack.coverImage}`} 
-                alt={currentTrack.title} 
-                className="track-cover"
-              />
-            </div>
-            <div className="track-details">
-              <h3>{currentTrack.title}</h3>
-              <p>{currentTrack.artist?.name || 'Unknown Artist'}</p>
-            </div>
-          </div>
-          <div className="volume-controls">
-            <span className="volume-icon">🔊</span>
-            <input
-              type="range"
-              min="0"
-              max="1"
-              step="0.01"
-              value={volume}
-              onChange={handleVolumeChange}
-              className="volume-slider"
-            />
-          </div>
-          <div className="player-controls">
-            <div className="control-buttons">
-              <button className="control-button">&lt;&lt;</button>
-              <button
-                className={`control-button play-pause ${isPlaying ? 'playing' : ''}`}
-                onClick={() => handlePlay(currentTrack)}
-              >
-                {isPlaying ? '❚❚' : '▶'}
-              </button>
-              <button className="control-button">&gt;&gt;</button>
-            </div>
-            <div className="progress-bar">
-              <span className="time-info">{formatTime(currentTime)}</span>
-              <input
-                type="range"
-                min="0"
-                max={duration || 0}
-                value={currentTime}
-                onChange={handleSeek}
-                className="progress-slider"
-              />
-              <span className="time-info">{formatTime(duration)}</span>
-            </div>
-          </div>
-        </div>
+      {selectedTrack && (
+        <AudioPlayer
+          track={{
+            ...selectedTrack,
+            audioUrl: `http://localhost:5000/${selectedTrack.audioFile}`
+          }}
+        />
       )}
-
-      <audio
-        ref={audioRef}
-        src={currentTrack ? `http://localhost:5000/${currentTrack.audioFile}` : ''}
-        onTimeUpdate={handleTimeUpdate}
-        onLoadedMetadata={handleLoadedMetadata}
-        onEnded={() => setIsPlaying(false)}
-      />
     </div>
   );
 };

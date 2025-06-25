@@ -32,22 +32,13 @@ section.browse-page {
 }
 
 .browse-page .track-card {
-  background: #181818;
-  color: #fff;
-  border-radius: 4px;
-  overflow: hidden;
-  transition: background 0.2s ease;
-  display: grid;
-  grid-template-columns: 40px 50px 1fr;
+  display: flex;
   align-items: center;
-  padding: 8px 20px;
-  border: none;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-  cursor: pointer;
-  width: 100%;
-  min-width: 0;
-  max-width: none;
-  position: relative;
+  padding: 6px 12px;
+  background: #262626;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  transition: background 0.2s;
 }
 
 .browse-page .track-card:last-child {
@@ -59,35 +50,46 @@ section.browse-page {
 }
 
 .browse-page .track-number {
-  color: #bbb;
-  font-size: 0.8em;
-  text-align: center;
-  flex-shrink: 0;
+  margin-right: 10px;
+  font-weight: bold;
+  color: #ccc;
+  font-size: 1em;
 }
 
 .browse-page .track-cover-container {
-  position: relative;
-  width: 35px;
-  height: 35px;
-  padding: 0 !important;
-  background-color: #000;
-  overflow: hidden;
-  border-radius: 2px;
-  flex-shrink: 0;
-  margin-right: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  margin-right: 10px;
 }
 
 .browse-page .track-cover {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  width: 36px;
+  height: 36px;
   object-fit: cover;
-  transition: none;
+  border-radius: 4px;
+}
+
+.browse-page .track-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.browse-page .track-info h3 {
+  margin: 0;
+  font-size: 1em;
+  color: #fff;
+}
+
+.browse-page .track-info p {
+  margin: 0;
+  color: #aaa;
+  font-size: 0.9em;
+}
+
+.browse-page .track-album,
+.browse-page .track-date,
+.browse-page .track-info .genre,
+.browse-page .repeated-title,
+.browse-page .track-duration {
+  display: none;
 }
 
 .browse-page .play-button {
@@ -120,32 +122,9 @@ section.browse-page {
   background: rgba(29, 185, 84, 0.7);
 }
 
-.browse-page .track-info {
-  padding: 0 0 0 10px !important;
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-.browse-page .track-info h3 {
-  font-size: 0.9em;
-  margin: 0 !important;
-  color: #fff;
-  font-weight: bold;
-}
-
-.browse-page .track-info p {
-  color: #bbb;
-  margin: 0 !important;
-  font-size: 0.8em;
-}
-
-.browse-page .track-album,
-.browse-page .track-date,
-.browse-page .track-info .genre,
-.browse-page .repeated-title,
-.browse-page .track-duration {
-  display: none;
+.browse-page .track-card .genre {
+  color: #8bc34a;
+  font-size: 0.85em;
 }
 
 .browse-page .music-player {
@@ -174,8 +153,8 @@ section.browse-page {
 }
 
 .browse-page .player-info .track-cover-container {
-  width: 60px;
-  height: 60px;
+  width: 36px;
+  height: 36px;
   padding-top: 0;
   border-radius: 2px;
   overflow: hidden;
