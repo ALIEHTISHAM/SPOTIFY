@@ -1,7 +1,8 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
-import { SubscriptionProvider } from './context/SubscriptionContext';
+import { SearchFilterProvider } from './context/SearchFilterContext';
+// import { SubscriptionProvider } from './context/SubscriptionContext';
 
 // Import pages
 import Home from './pages/Home';
@@ -23,7 +24,7 @@ function App() {
 
   return (
     <Router>
-      <SubscriptionProvider>
+      <SearchFilterProvider>
         <div className="app">
           <Navbar />
           <main className="main-content">
@@ -79,7 +80,7 @@ function App() {
           </main>
           <Footer />
         </div>
-      </SubscriptionProvider>
+      </SearchFilterProvider>
     </Router>
   );
 }

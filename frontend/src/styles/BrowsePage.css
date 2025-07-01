@@ -1,3 +1,8 @@
+/* --- RENDER OPTIMIZATION ---
+   Compact row layout for track list. Reduces height and whitespace for better UX.
+   Ensures track list is visually clean and efficient.
+*/
+
 section.browse-page {
   max-width: none;
   margin: 0 auto;
@@ -57,6 +62,10 @@ section.browse-page {
 }
 
 .browse-page .track-cover-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   margin-right: 10px;
 }
 
@@ -192,7 +201,7 @@ section.browse-page {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
+
 }
 
 .browse-page .control-buttons {
@@ -610,4 +619,51 @@ section.browse-page {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+.browse-page .like-button {
+  background: transparent !important;
+  color: rgb(253, 0, 0) !important;
+  z-index: 1000 !important;
+  position: relative !important;
+  margin-top: 0.3em;
+  border-radius: 50%;
+  padding: 0.3em 0.5em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.browse-page .like-button.liked,
+.browse-page .like-button[aria-label='Unlike'] {
+  color: red;
+}
+
+.browse-page .like-button:hover:not(:disabled),
+.browse-page .like-button:focus-visible:not(:disabled) {
+  background: #ffe6ea;
+}
+
+.browse-page .like-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.browse-page .comment-button {
+  background-color: transparent;
+  color: #1e90ff !important; /* Dodger blue for comment icon */
+  margin-left: 0.5em;
+  z-index: 1000 !important;
+  position: relative !important;
+  margin-top: 0.3em;
+  border-radius: 50%;
+  padding: 0.3em 0.3em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.browse-page .comment-button:hover:not(:disabled),
+.browse-page .comment-button:focus-visible:not(:disabled) {
+  background: #4cad33;
 } 

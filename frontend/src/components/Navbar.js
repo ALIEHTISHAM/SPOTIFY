@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useSearchFilter } from '../context/SearchFilterContext';
 
 const Navbar = () => {
   const { isAuthenticated, user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const { searchQuery, setSearchQuery } = useSearchFilter();
   const [searchTerm, setSearchTerm] = useState('');
 
   // Initialize search term from URL query parameter
@@ -14,8 +16,9 @@ const Navbar = () => {
     const query = params.get('q');
     if (query) {
       setSearchTerm(query);
+      setSearchQuery(query);
     }
-  }, [location.search]);
+  }, [location.search, setSearchQuery]);
 
   const handleLogout = () => {
     logout();
@@ -25,11 +28,7 @@ const Navbar = () => {
   const handleSearch = () => {
     if (searchTerm.trim()) {
       navigate(`/browse?q=${encodeURIComponent(searchTerm.trim())}`);
-      // Dispatch custom event for search
-      const searchEvent = new CustomEvent('searchPerformed', {
-        detail: { searchTerm: searchTerm.trim() }
-      });
-      window.dispatchEvent(searchEvent);
+      setSearchQuery(searchTerm.trim());
     }
   };
 
@@ -42,11 +41,7 @@ const Navbar = () => {
   const handleInputChange = (e) => {
     const value = e.target.value;
     setSearchTerm(value);
-    // Dispatch custom event for real-time search
-    const searchEvent = new CustomEvent('searchInput', {
-      detail: { searchTerm: value }
-    });
-    window.dispatchEvent(searchEvent);
+    setSearchQuery(value);
   };
 
   return (

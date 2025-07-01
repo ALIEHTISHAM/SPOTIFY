@@ -42,8 +42,8 @@ app.use('/api/artist', artistRoutes);
 app.use('/api/admin', require('./routes/admin'));
 app.use('/api/publicTracks', require('./routes/publicTracks'));
 app.use('/api/subscription', subscriptionRoutes);
-
-
+app.use('/api/like', require('./routes/like'));
+app.use('/api/comments', require('./routes/comment'));
 
 app.get('/', (req, res) => {
   res.json({ message: 'Welcome to Music Streaming Platform API' });

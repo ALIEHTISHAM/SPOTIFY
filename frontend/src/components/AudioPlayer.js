@@ -4,41 +4,55 @@
  * Handles all audio playback logic and state locally.
  * Memoized with React.memo to prevent unnecessary re-renders.
  * [Optimization] Playback state is now fully internal.
+ * Only re-renders on track change, not on play/pause/seek.
  */
 import React, { useRef, useState, useEffect, useCallback } from 'react';
+import { useTrack } from '../context/TrackContext';
 
-const AudioPlayer = React.memo(function AudioPlayer({
-  track,
-  initialVolume = 1
-}) {
+const AudioPlayer = React.memo(function AudioPlayer({ initialVolume = 1 }) {
+  const { selectedTrack } = useTrack();
+  // --- RENDER OPTIMIZATION ---
+  // isPlaying and all playback logic are internal.
+  // This prevents parent re-renders on play/pause/seek.
   const audioRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [volume, setVolume] = useState(initialVolume);
   const prevTrackId = useRef(null);
+  const shouldAutoPlay = useRef(false);
 
-  // When track changes, reset state and auto-play
+  // --- RENDER OPTIMIZATION ---
+  // When track changes, reset state and auto-play.
+  // This ensures AudioPlayer only re-renders on track change.
   useEffect(() => {
-    if (!track) return;
-    if (prevTrackId.current !== track._id) {
+    if (!selectedTrack) return;
+    if (prevTrackId.current !== selectedTrack._id) {
       setIsPlaying(true);
       setCurrentTime(0);
-      prevTrackId.current = track._id;
+      prevTrackId.current = selectedTrack._id;
+      shouldAutoPlay.current = true;
     }
-  }, [track]);
+  }, [selectedTrack]);
 
   useEffect(() => {
     if (!audioRef.current) return;
     if (isPlaying) {
-      audioRef.current.play();
+      // Only play if metadata is loaded
+      if (!audioRef.current.paused && !audioRef.current.ended) return;
+      audioRef.current.play().catch(() => {});
     } else {
       audioRef.current.pause();
     }
-  }, [isPlaying, track]);
+  }, [isPlaying, selectedTrack]);
 
   const handleLoadedMetadata = useCallback(() => {
     setDuration(audioRef.current.duration);
+    // Auto-play if flagged
+    if (shouldAutoPlay.current) {
+      audioRef.current.play().catch(() => {});
+      shouldAutoPlay.current = false;
+    }
   }, []);
 
   const handleTimeUpdate = useCallback(() => {
@@ -71,21 +85,23 @@ const AudioPlayer = React.memo(function AudioPlayer({
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
-  if (!track) return null;
+  if (!selectedTrack) return null;
 
   return (
     <div className="music-player">
+      {/* --- RENDER OPTIMIZATION ---
+          All playback controls and state are internal to AudioPlayer. */}
       <div className="player-info">
         <div className="track-cover-container">
           <img
-            src={track.coverImage ? `http://localhost:5000/${track.coverImage}` : ''}
-            alt={track.title}
+            src={selectedTrack.coverImage ? `http://localhost:5000/${selectedTrack.coverImage}` : ''}
+            alt={selectedTrack.title}
             className="track-cover"
           />
         </div>
         <div className="track-details">
-          <h3>{track.title}</h3>
-          <p>{track.artist?.name || 'Unknown Artist'}</p>
+          <h3>{selectedTrack.title}</h3>
+          <p>{selectedTrack.artist?.name || 'Unknown Artist'}</p>
         </div>
       </div>
       <div className="volume-controls">
@@ -107,7 +123,7 @@ const AudioPlayer = React.memo(function AudioPlayer({
           </button>
         </div>
         <div className="progress-bar">
-          <span className="time-info">{formatTime(currentTime)}</span>
+          <span className="time-info">{formatTime(currentTime)}&nbsp;/&nbsp;{formatTime(duration)}</span>
           <input
             type="range"
             min="0"
@@ -116,12 +132,11 @@ const AudioPlayer = React.memo(function AudioPlayer({
             onChange={handleSeek}
             className="progress-slider"
           />
-          <span className="time-info">{formatTime(duration)}</span>
         </div>
       </div>
       <audio
         ref={audioRef}
-        src={track.audioUrl}
+        src={`http://localhost:5000/${selectedTrack.audioFile}`}
         onLoadedMetadata={handleLoadedMetadata}
         onTimeUpdate={handleTimeUpdate}
         onEnded={handleEnded}

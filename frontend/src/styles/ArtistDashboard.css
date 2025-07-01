@@ -119,10 +119,7 @@ button[type="submit"]:disabled {
   align-items: center;
 }
 
-.track-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
-}
+
 
 .track-cover-container {
   position: relative;
