@@ -76,16 +76,18 @@ function CommentOverlay({ open, onClose, track }) {
   const [loading, setLoading] = useState(false);
   const [newComment, setNewComment] = useState('');
   const [replyInputs, setReplyInputs] = useState({}); // {commentId: replyText}
-  const [replies, setReplies] = useState({}); // {commentId: [replies]}
   const [replying, setReplying] = useState({}); // {commentId: bool}
   const [openReplies, setOpenReplies] = useState({}); // {commentId: true/false}
+  const [showReplyInput, setShowReplyInput] = useState({}); // {commentId: bool}
+  const replyInputRefs = useRef({});
+  const [activeReplyInputId, setActiveReplyInputId] = useState(null); // ID of comment or reply being replied to
 
-  // Fetch top-level comments when overlay opens or track changes
+  // Fetch all comments for a track as a flat array
   const fetchComments = async () => {
     if (!track?._id) return;
     setLoading(true);
     try {
-      const res = await axios.get(`http://localhost:5000/api/comments/track/${track._id}/comments`);
+      const res = await axios.get(`http://localhost:5000/api/comments/track/${track._id}/comments-flat`);
       setComments(res.data.comments || []);
     } catch {
       setComments([]);
@@ -97,18 +99,8 @@ function CommentOverlay({ open, onClose, track }) {
   useEffect(() => {
     if (!open || !track?._id) return;
     fetchComments();
+    setOpenReplies({}); // Hide all replies by default when overlay opens or track changes
   }, [open, track]);
-
-  // Fetch replies for a comment
-  const fetchReplies = async (commentId) => {
-    if (replies[commentId]) return; // Already loaded
-    try {
-      const res = await axios.get(`http://localhost:5000/api/comments/comment/${commentId}/replies`);
-      setReplies(r => ({ ...r, [commentId]: res.data.replies || [] }));
-    } catch {
-      setReplies(r => ({ ...r, [commentId]: [] }));
-    }
-  };
 
   // Add a new top-level comment
   const handleAddComment = async () => {
@@ -128,33 +120,96 @@ function CommentOverlay({ open, onClose, track }) {
     }
   };
 
-  // Add a reply to a comment
-  const handleAddReply = async (commentId) => {
-    const replyText = replyInputs[commentId]?.trim();
+  // Add a reply to a comment or reply (attach to the actual parent)
+  const handleAddReply = async (parentId) => {
+    const replyText = replyInputs[parentId]?.trim();
     if (!replyText) return;
-    setReplying(r => ({ ...r, [commentId]: true }));
+    setReplying(r => ({ ...r, [parentId]: true }));
     try {
       const token = localStorage.getItem('token');
-      await axios.post(`http://localhost:5000/api/comments/comment/${commentId}/reply`, {
+      await axios.post(`http://localhost:5000/api/comments/comment/${parentId}/reply`, {
         trackId: track._id,
         text: replyText,
       }, { headers: { Authorization: `Bearer ${token}` } });
-      setReplyInputs(i => ({ ...i, [commentId]: '' }));
-      await fetchReplies(commentId); // Re-fetch all replies for this comment
+      setReplyInputs(i => ({ ...i, [parentId]: '' }));
+      setActiveReplyInputId(null); // Hide input after reply
+      await fetchComments(); // Refresh comments
     } catch (err) {
       alert(err.response?.data?.message || 'Error adding reply');
     } finally {
-      setReplying(r => ({ ...r, [commentId]: false }));
+      setReplying(r => ({ ...r, [parentId]: false }));
     }
+  };
+
+  // New: handle reply to a top-level comment (pre-fill @ParentUserName)
+  const handleReplyToComment = (commentId, parentUserName) => {
+    setReplyInputs(inputs => ({
+      ...inputs,
+      [commentId]: inputs[commentId]?.startsWith(`@${parentUserName} `)
+        ? inputs[commentId]
+        : `@${parentUserName} `
+    }));
+    setActiveReplyInputId(currentId => {
+      if (currentId === commentId) return null; // Toggle off if already open
+      setTimeout(() => {
+        const input = replyInputRefs.current[commentId];
+        if (input) {
+          input.focus();
+          const val = input.value;
+          input.setSelectionRange(val.length, val.length);
+        }
+      }, 0);
+      return commentId;
+    });
+  };
+
+  // New: handle reply to a reply (pre-fill @username in the parent comment's reply input)
+  const handleReplyToReply = (parentCommentId, replyId, replyUserName) => {
+    setReplyInputs(inputs => ({
+      ...inputs,
+      [replyId]: inputs[replyId]?.startsWith(`@${replyUserName} `)
+        ? inputs[replyId]
+        : `@${replyUserName} `
+    }));
+    setActiveReplyInputId(currentId => {
+      if (currentId === replyId) return null; // Toggle off if already open
+      setTimeout(() => {
+        const input = replyInputRefs.current[replyId];
+        if (input) {
+          input.focus();
+          const val = input.value;
+          input.setSelectionRange(val.length, val.length);
+        }
+      }, 0);
+      return replyId;
+    });
   };
 
   // Toggle replies for a comment
   const handleToggleReplies = async (commentId) => {
     setOpenReplies(prev => ({ ...prev, [commentId]: !prev[commentId] }));
-    if (!openReplies[commentId] && !replies[commentId]) {
-      await fetchReplies(commentId);
-    }
   };
+
+  // Helper: Render reply text with styled @username if present
+  function renderReplyText(text) {
+    const match = text.match(/^@(\S+)\s(.*)$/);
+    if (match) {
+      return (
+        <>
+          <span style={{ color: '#1e90ff', fontWeight: 500 }}>{`@${match[1]}`}</span>{' '}{match[2]}
+        </>
+      );
+    }
+    return text;
+  }
+
+  // Group comments by parentId
+  const commentsByParent = {};
+  comments.forEach(c => {
+    const pid = c.parent || 'root';
+    if (!commentsByParent[pid]) commentsByParent[pid] = [];
+    commentsByParent[pid].push(c);
+  });
 
   if (!open) return null;
 
@@ -173,34 +228,34 @@ function CommentOverlay({ open, onClose, track }) {
         </div>
         <div style={commentsListStyle}>
           {loading ? <p style={{ color: '#aaa' }}>Loading...</p> : null}
-          {!loading && comments.length === 0 ? (
+          {!loading && (commentsByParent['root']?.length === 0 || !commentsByParent['root']) ? (
             <p style={{ color: '#aaa' }}>No comments yet. Be the first to comment!</p>
           ) : (
-            comments.map(c => (
+            (commentsByParent['root'] || []).map(c => (
               <div key={c._id} style={{ marginBottom: '1.2rem', borderBottom: '1px solid #222', paddingBottom: '0.7rem' }}>
                 <b style={{ color: '#1db954' }}>{c.user?.name || 'User'}</b>
                 <div style={{ marginTop: '0.2rem', color: '#fff' }}>{c.text}</div>
-                <button
-                  style={{ background: 'none', color: '#1e90ff', border: 'none', cursor: 'pointer', marginTop: '0.3rem', fontSize: '0.95em' }}
-                  onClick={() => handleToggleReplies(c._id)}
-                >
-                  {openReplies[c._id] ? 'Hide Replies' : 'View Replies'}
-                </button>
-                {/* Replies */}
-                {openReplies[c._id] && replies[c._id] && (
+                <div style={{ display: 'flex', flexDirection: 'row', gap: '1.2rem', marginTop: '0.3rem' }}>
+                  <button
+                    style={{ background: 'none', color: '#1e90ff', border: 'none', cursor: 'pointer', fontSize: '0.95em' }}
+                    onClick={() => handleReplyToComment(c._id, c.user?.name || 'User')}
+                  >
+                    Reply
+                  </button>
+                  {(commentsByParent[c._id]?.length > 0) && (
+                    <button
+                      style={{ background: 'none', color: '#1e90ff', border: 'none', cursor: 'pointer', fontSize: '0.95em' }}
+                      onClick={() => handleToggleReplies(c._id)}
+                    >
+                      {openReplies[c._id] ? 'Hide Replies' : 'View Replies'}
+                    </button>
+                  )}
+                </div>
+                {/* Show reply input below parent comment if active */}
+                {activeReplyInputId === c._id && (
                   <div style={{ marginLeft: '1.2rem', marginTop: '0.5rem' }}>
-                    {replies[c._id].length === 0 ? (
-                      <span style={{ color: '#aaa' }}>No replies yet.</span>
-                    ) : (
-                      replies[c._id].map(r => (
-                        <div key={r._id} style={{ marginBottom: '0.7rem' }}>
-                          <b style={{ color: '#1db954' }}>{r.user?.name || 'User'}</b>
-                          <div style={{ color: '#fff' }}>{r.text}</div>
-                        </div>
-                      ))
-                    )}
-                    {/* Reply input */}
                     <textarea
+                      ref={el => (replyInputRefs.current[c._id] = el)}
                       style={replyInputStyle}
                       placeholder="Write a reply..."
                       value={replyInputs[c._id] || ''}
@@ -213,6 +268,72 @@ function CommentOverlay({ open, onClose, track }) {
                     >
                       {replying[c._id] ? 'Replying...' : 'Reply'}
                     </button>
+                  </div>
+                )}
+                {/* Replies: only two levels of indentation, all descendants flat under each direct reply */}
+                {openReplies[c._id] && (
+                  <div style={{ marginLeft: '1.2rem', marginTop: '0.5rem' }}>
+                    {(commentsByParent[c._id] || []).map(reply => (
+                      <div key={reply._id} style={{ marginBottom: '0.7rem' }}>
+                        <b style={{ color: '#1db954' }}>{reply.user?.name || 'User'}</b>
+                        <div style={{ color: '#fff' }}>{renderReplyText(reply.text)}</div>
+                        <button
+                          style={{ background: 'none', color: '#1e90ff', border: 'none', cursor: 'pointer', fontSize: '0.92em', marginLeft: '0.5rem' }}
+                          onClick={() => handleReplyToReply(c._id, reply._id, reply.user?.name || 'User')}
+                        >
+                          Reply
+                        </button>
+                        {activeReplyInputId === reply._id && (
+                          <div style={{ marginLeft: '1.2rem', marginTop: '0.5rem' }}>
+                            <textarea
+                              ref={el => (replyInputRefs.current[reply._id] = el)}
+                              style={replyInputStyle}
+                              placeholder="Write a reply..."
+                              value={replyInputs[reply._id] || ''}
+                              onChange={e => setReplyInputs(i => ({ ...i, [reply._id]: e.target.value }))}
+                            />
+                            <button
+                              style={{ background: '#1db954', color: 'white', border: 'none', borderRadius: '6px', padding: '0.3rem 1rem', cursor: 'pointer', marginTop: '0.2rem' }}
+                              onClick={() => handleAddReply(reply._id)}
+                              disabled={replying[reply._id]}
+                            >
+                              {replying[reply._id] ? 'Replying...' : 'Reply'}
+                            </button>
+                          </div>
+                        )}
+                        {/* Render all direct children of this reply (flat, no further nesting) */}
+                        {(commentsByParent[reply._id] || []).map(descendant => (
+                          <div key={descendant._id} style={{ marginLeft: '1.2rem', marginTop: '0.5rem', marginBottom: '0.7rem', background: 'rgba(30,200,30,0.08)', borderRadius: '4px', padding: '0.3rem 0.5rem' }}>
+                            <b style={{ color: '#1db954' }}>{descendant.user?.name || 'User'}</b>
+                            <div style={{ color: '#fff' }}>{renderReplyText(descendant.text)}</div>
+                            <button
+                              style={{ background: 'none', color: '#1e90ff', border: 'none', cursor: 'pointer', fontSize: '0.92em', marginLeft: '0.5rem' }}
+                              onClick={() => handleReplyToReply(reply._id, descendant._id, descendant.user?.name || 'User')}
+                            >
+                              Reply
+                            </button>
+                            {activeReplyInputId === descendant._id && (
+                              <div style={{ marginLeft: '1.2rem', marginTop: '0.5rem' }}>
+                                <textarea
+                                  ref={el => (replyInputRefs.current[descendant._id] = el)}
+                                  style={replyInputStyle}
+                                  placeholder="Write a reply..."
+                                  value={replyInputs[descendant._id] || ''}
+                                  onChange={e => setReplyInputs(i => ({ ...i, [descendant._id]: e.target.value }))}
+                                />
+                                <button
+                                  style={{ background: '#1db954', color: 'white', border: 'none', borderRadius: '6px', padding: '0.3rem 1rem', cursor: 'pointer', marginTop: '0.2rem' }}
+                                  onClick={() => handleAddReply(descendant._id)}
+                                  disabled={replying[descendant._id]}
+                                >
+                                  {replying[descendant._id] ? 'Replying...' : 'Reply'}
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    ))}
                   </div>
                 )}
               </div>
