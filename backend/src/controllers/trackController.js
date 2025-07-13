@@ -75,11 +75,78 @@ const getArtistTracks = async (req, res) => {
 // Get all approved tracks (for browsing - public)
 const getApprovedTracks = async (req, res) => {
   try {
-    const tracks = await Track.find({ status: 'approved' }).populate('artist', 'name artistProfile');
-    res.json(tracks);
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 20;
+    const skip = (page - 1) * limit;
+
+    const { q, genre, artist } = req.query;
+    let query = { status: 'approved' };
+
+    // Handle search by title or artist name
+    if (q) {
+      // Find artist IDs matching q
+      const artistDocs = await User.find({ name: { $regex: q, $options: 'i' } }, '_id');
+      const artistIds = artistDocs.map(a => a._id);
+
+      query = {
+        ...query,
+        $or: [
+          { title: { $regex: q, $options: 'i' } },
+          { artist: { $in: artistIds } }
+        ]
+      };
+    }
+
+    // Handle genre filter
+    if (genre) {
+      query.genre = genre;
+    }
+
+    // Handle artist filter (dropdown)
+    if (artist) {
+      const artistDocs = await User.find({ name: { $regex: artist, $options: 'i' } }, '_id');
+      const filterArtistIds = artistDocs.map(a => a._id);
+      query.artist = { $in: filterArtistIds };
+    }
+
+    const [tracks, total] = await Promise.all([
+      Track.find(query)
+        .populate('artist', 'name artistProfile')
+        .sort({ uploadDate: -1, _id: 1 }) // Stable, unique sort
+        .skip(skip)
+        .limit(limit),
+      Track.countDocuments(query)
+    ]);
+
+    res.json({
+      tracks,
+      total,
+      page,
+      totalPages: Math.ceil(total / limit)
+    });
   } catch (error) {
     console.error('Error fetching approved tracks:', error);
     res.status(500).json({ message: 'Error fetching approved tracks' });
+  }
+};
+
+const getAllArtists = async (req, res) => {
+  try {
+    const artists = await Track.distinct('artist', { status: 'approved' });
+    const artistDocs = await User.find({ _id: { $in: artists } }, 'name');
+    const artistNames = artistDocs.map(a => a.name);
+    res.json({ artists: artistNames });
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching artists' });
+  }
+};
+
+const getAllGenres = async (req, res) => {
+  try {
+    const genres = await Track.distinct('genre', { status: 'approved' });
+    res.json({ genres });
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching genres' });
   }
 };
 
@@ -87,4 +154,6 @@ module.exports = {
   uploadTrack,
   getArtistTracks,
   getApprovedTracks,
+  getAllArtists,
+  getAllGenres,
 };

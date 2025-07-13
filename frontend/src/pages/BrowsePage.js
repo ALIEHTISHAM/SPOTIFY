@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSubscription } from '../context/SubscriptionContext';
 import { useAuth } from '../context/AuthContext';
@@ -7,27 +6,15 @@ import '../styles/BrowsePage.css';
 import AudioPlayer from '../components/AudioPlayer';
 import TrackList from '../components/TrackList';
 
-const BrowsePage = () => {
+const BrowsePage = React.memo(() => {
+  console.log('renderingbrowsepage');
+
   const { hasSubscription, createCheckoutSession, loading: subscriptionLoading, subscriptionDetails } = useSubscription();
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
-  const [tracks, setTracks] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    const fetchTracks = async () => {
-      try {
-        const response = await axios.get('http://localhost:5000/api/publicTracks/approved');
-        setTracks(response.data);
-        setLoading(false);
-      } catch (err) {
-        setError('Failed to load tracks. Please try again later.');
-        setLoading(false);
-      }
-    };
-    fetchTracks();
-  }, []);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [total, setTotal] = useState(0);
 
   const handleSubscribeClick = () => {
     if (!isAuthenticated) {
@@ -37,8 +24,7 @@ const BrowsePage = () => {
     createCheckoutSession();
   };
 
-  if (loading || subscriptionLoading) return <div>Loading...</div>;
-  if (error) return <div className="error">{error}</div>;
+  if (subscriptionLoading) return <div>Loading...</div>;
 
   return (
     <div className="browse-page">
@@ -57,10 +43,25 @@ const BrowsePage = () => {
           </div>
         )}
       </div>
-      <TrackList tracks={tracks} hasSubscription={hasSubscription} subscriptionDetails={subscriptionDetails} />
+      <TrackList
+        page={page}
+        setPage={setPage}
+        totalPages={totalPages}
+        setTotalPages={setTotalPages}
+        total={total}
+        setTotal={setTotal}
+        hasSubscription={hasSubscription}
+        subscriptionDetails={subscriptionDetails}
+      />
+      {/* Pagination Controls */}
+      <div className="pagination-controls" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', margin: '1.5rem 0' }}>
+        <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} style={{ marginRight: '1rem' }}>Previous</button>
+        <span>Page {page} of {totalPages} ({total} tracks)</span>
+        <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages} style={{ marginLeft: '1rem' }}>Next</button>
+      </div>
       <AudioPlayer />
     </div>
   );
-};
+});
 
 export default BrowsePage; 

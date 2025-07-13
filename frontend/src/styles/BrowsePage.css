@@ -469,7 +469,7 @@ section.browse-page {
 
 /* Filter Section */
 .filter-section {
-  margin: 1rem 0;
+  margin: -25px 0px 10px;
   padding: 1rem;
   background: #181818;
   border-radius: 8px;
@@ -624,7 +624,7 @@ section.browse-page {
 .browse-page .like-button {
   background: transparent !important;
   color: rgb(253, 0, 0) !important;
-  z-index: 1000 !important;
+
   position: relative !important;
   margin-top: 0.3em;
   border-radius: 50%;
@@ -653,7 +653,6 @@ section.browse-page {
   background-color: transparent;
   color: #1e90ff !important; /* Dodger blue for comment icon */
   margin-left: 0.5em;
-  z-index: 1000 !important;
   position: relative !important;
   margin-top: 0.3em;
   border-radius: 50%;

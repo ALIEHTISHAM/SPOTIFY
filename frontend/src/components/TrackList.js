@@ -1,41 +1,55 @@
-import React, { useCallback } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
+import axios from 'axios';
 import { useTrack } from '../context/TrackContext';
 import { useSearchFilter } from '../context/SearchFilterContext';
 import TrackCard from './TrackCard';
 import CommentOverlay from './CommentOverlay';
+import FilterBar from './FilterBar';
 
-const TrackList = React.memo(function TrackList({ tracks, hasSubscription, subscriptionDetails }) {
+const TrackList = React.memo(function TrackList({ page, setPage, totalPages, setTotalPages, total, setTotal, hasSubscription, subscriptionDetails }) {
+  const { searchQuery, selectedGenre, selectedArtist, setSearchQuery, setSelectedGenre, setSelectedArtist } = useSearchFilter();
+  const [tracks, setTracks] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const { selectedTrack, setSelectedTrack } = useTrack();
-  const {
-    searchQuery,
-    setSearchQuery,
-    selectedGenre,
-    setSelectedGenre,
-    selectedArtist,
-    setSelectedArtist
-  } = useSearchFilter();
+  const [commentOverlayOpen, setCommentOverlayOpen] = useState(false);
+  const [commentTrack, setCommentTrack] = useState(null);
+  const [allArtists, setAllArtists] = useState([]);
+  const [allGenres, setAllGenres] = useState([]);
 
-  const [commentOverlayOpen, setCommentOverlayOpen] = React.useState(false);
-  const [commentTrack, setCommentTrack] = React.useState(null);
+  useEffect(() => {
+    axios.get('http://localhost:5000/api/publicTracks/artists').then(res => setAllArtists(res.data.artists));
+    axios.get('http://localhost:5000/api/publicTracks/genres').then(res => setAllGenres(res.data.genres));
+  }, []);
 
-  // Filter tracks based on search and filters
-  const filteredTracks = tracks.filter(track => {
-    const matchesSearch = searchQuery ?
-      track.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      track.artist?.name.toLowerCase().includes(searchQuery.toLowerCase()) : true;
+  // Reset to page 1 on filter/search change
+  useEffect(() => {
+    setPage(1);
+    // eslint-disable-next-line
+  }, [searchQuery, selectedGenre, selectedArtist]);
 
-    const matchesGenre = selectedGenre ?
-      track.genre.toLowerCase() === selectedGenre.toLowerCase() : true;
-
-    const matchesArtist = selectedArtist ?
-      track.artist?.name.toLowerCase() === selectedArtist.toLowerCase() : true;
-
-    return matchesSearch && matchesGenre && matchesArtist;
-  });
-
-  // Get unique genres and artists for filter dropdowns
-  const uniqueGenres = [...new Set(tracks.map(track => track.genre))];
-  const uniqueArtists = [...new Set(tracks.map(track => track.artist?.name).filter(Boolean))];
+  // Fetch tracks when page or filters/search change
+  useEffect(() => {
+    const fetchTracks = async () => {
+      setLoading(true);
+      try {
+        const params = { page, limit: 20 };
+        if (searchQuery) params.q = searchQuery;
+        if (selectedGenre) params.genre = selectedGenre;
+        if (selectedArtist) params.artist = selectedArtist;
+        const response = await axios.get('http://localhost:5000/api/publicTracks/approved', { params });
+        setTracks(response.data.tracks);
+        setTotalPages(response.data.totalPages);
+        setTotal(response.data.total);
+        setLoading(false);
+      } catch (err) {
+        setError('Failed to load tracks. Please try again later.');
+        setLoading(false);
+      }
+    };
+    fetchTracks();
+    // eslint-disable-next-line
+  }, [page, searchQuery, selectedGenre, selectedArtist]);
 
   // Clear all filters
   const handleClearFilters = () => {
@@ -57,66 +71,52 @@ const TrackList = React.memo(function TrackList({ tracks, hasSubscription, subsc
     setSelectedTrack(track);
   }, [hasSubscription, subscriptionDetails, setSelectedTrack]);
 
-  const handleOpenComments = React.useCallback((track) => {
+  const handleOpenComments = useCallback((track) => {
     setCommentTrack(track);
     setCommentOverlayOpen(true);
   }, []);
 
-  const handleCloseComments = React.useCallback(() => {
+  const handleCloseComments = useCallback(() => {
     setCommentOverlayOpen(false);
     setCommentTrack(null);
   }, []);
 
+  // Determine if filters should be shown based on searchQuery
+  const showFilters = !!searchQuery;
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div className="error">{error}</div>;
+
   return (
-    <div className="tracks-section">
-      {/* Filter Section */}
-      <div className="filter-section">
-        <div className="filters">
-          <select
-            value={selectedArtist}
-            onChange={e => setSelectedArtist(e.target.value)}
-            className="filter-select"
-          >
-            <option value="">All Artists</option>
-            {uniqueArtists.map(artist => (
-              <option key={artist} value={artist}>{artist}</option>
-            ))}
-          </select>
-          <select
-            value={selectedGenre}
-            onChange={e => setSelectedGenre(e.target.value)}
-            className="filter-select"
-          >
-            <option value="">All Genres</option>
-            {uniqueGenres.map(genre => (
-              <option key={genre} value={genre}>{genre}</option>
-            ))}
-          </select>
-          <button
-            onClick={handleClearFilters}
-            className="clear-filters-btn"
-          >
-            Clear Filters
-          </button>
+    <>
+      {showFilters && (
+        <FilterBar
+          uniqueArtists={allArtists}
+          uniqueGenres={allGenres}
+          selectedArtist={selectedArtist}
+          setSelectedArtist={setSelectedArtist}
+          selectedGenre={selectedGenre}
+          setSelectedGenre={setSelectedGenre}
+          handleClearFilters={handleClearFilters}
+          resultsCount={tracks.length}
+        />
+      )}
+      <div className="tracks-section">
+        {/* Track Cards */}
+        <div className="tracks-grid">
+          {tracks.map((track) => (
+            <TrackCard
+              key={track._id}
+              track={track}
+              isSelected={selectedTrack?._id === track._id}
+              onSelect={handlePlay}
+              onOpenComments={handleOpenComments}
+            />
+          ))}
         </div>
-        <div className="results-count">
-          {filteredTracks.length} tracks found
-        </div>
+        <CommentOverlay open={commentOverlayOpen} onClose={handleCloseComments} track={commentTrack} allTracks={tracks} />
       </div>
-      {/* Track Cards */}
-      <div className="tracks-grid">
-        {filteredTracks.map((track) => (
-          <TrackCard
-            key={track._id}
-            track={track}
-            isSelected={selectedTrack?._id === track._id}
-            onSelect={handlePlay}
-            onOpenComments={handleOpenComments}
-          />
-        ))}
-      </div>
-      <CommentOverlay open={commentOverlayOpen} onClose={handleCloseComments} track={commentTrack} />
-    </div>
+    </>
   );
 });
 

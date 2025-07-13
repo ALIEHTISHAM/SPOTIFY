@@ -81,16 +81,23 @@ function CommentOverlay({ open, onClose, track }) {
   const [showReplyInput, setShowReplyInput] = useState({}); // {commentId: bool}
   const replyInputRefs = useRef({});
   const [activeReplyInputId, setActiveReplyInputId] = useState(null); // ID of comment or reply being replied to
+  const [artist, setArtist] = useState(null);
+  const [trackTitle, setTrackTitle] = useState('');
+  const [openDescendants, setOpenDescendants] = useState({}); // {replyId: true/false}
 
-  // Fetch all comments for a track as a flat array
+  // Fetch all comments for a track as a hierarchy, and artist/track info
   const fetchComments = async () => {
     if (!track?._id) return;
     setLoading(true);
     try {
-      const res = await axios.get(`http://localhost:5000/api/comments/track/${track._id}/comments-flat`);
+      const res = await axios.get(`http://localhost:5000/api/comments/track/${track._id}/comments-hierarchical`);
       setComments(res.data.comments || []);
+      setArtist(res.data.artist || null);
+      setTrackTitle(res.data.trackTitle || '');
     } catch {
       setComments([]);
+      setArtist(null);
+      setTrackTitle('');
     } finally {
       setLoading(false);
     }
@@ -190,8 +197,17 @@ function CommentOverlay({ open, onClose, track }) {
     setOpenReplies(prev => ({ ...prev, [commentId]: !prev[commentId] }));
   };
 
+  // Add this function below handleToggleReplies
+  const handleToggleDescendants = (replyId) => {
+    setOpenDescendants(prev => ({
+      ...prev,
+      [replyId]: !prev[replyId]
+    }));
+  };
+
   // Helper: Render reply text with styled @username if present
   function renderReplyText(text) {
+    if (typeof text !== 'string') return '';
     const match = text.match(/^@(\S+)\s(.*)$/);
     if (match) {
       return (
@@ -202,14 +218,6 @@ function CommentOverlay({ open, onClose, track }) {
     }
     return text;
   }
-
-  // Group comments by parentId
-  const commentsByParent = {};
-  comments.forEach(c => {
-    const pid = c.parent || 'root';
-    if (!commentsByParent[pid]) commentsByParent[pid] = [];
-    commentsByParent[pid].push(c);
-  });
 
   if (!open) return null;
 
@@ -223,18 +231,19 @@ function CommentOverlay({ open, onClose, track }) {
     <div style={overlayStyle} onMouseDown={handleOverlayClick}>
       <div style={drawerRef ? drawerStyle : {}} ref={drawerRef} onMouseDown={e => e.stopPropagation()}>
         <div style={headerStyle}>
-          <span><b>Comments</b> — {track?.title}</span>
+          <span>{trackTitle} — {artist?.name} ({artist?.numTracks} {artist?.numTracks === 1 ? 'track' : 'tracks'})</span>
+          <span></span>
           <button onClick={onClose} style={closeBtnStyle} aria-label="Close">×</button>
         </div>
         <div style={commentsListStyle}>
           {loading ? <p style={{ color: '#aaa' }}>Loading...</p> : null}
-          {!loading && (commentsByParent['root']?.length === 0 || !commentsByParent['root']) ? (
+          {!loading && comments.length === 0 ? (
             <p style={{ color: '#aaa' }}>No comments yet. Be the first to comment!</p>
           ) : (
-            (commentsByParent['root'] || []).map(c => (
+            comments.map(c => (
               <div key={c._id} style={{ marginBottom: '1.2rem', borderBottom: '1px solid #222', paddingBottom: '0.7rem' }}>
                 <b style={{ color: '#1db954' }}>{c.user?.name || 'User'}</b>
-                <div style={{ marginTop: '0.2rem', color: '#fff' }}>{c.text}</div>
+                <div style={{ marginTop: '0.2rem', color: '#fff' }}>{c.content ?? c.text}</div>
                 <div style={{ display: 'flex', flexDirection: 'row', gap: '1.2rem', marginTop: '0.3rem' }}>
                   <button
                     style={{ background: 'none', color: '#1e90ff', border: 'none', cursor: 'pointer', fontSize: '0.95em' }}
@@ -242,13 +251,13 @@ function CommentOverlay({ open, onClose, track }) {
                   >
                     Reply
                   </button>
-                  {(commentsByParent[c._id]?.length > 0) && (
-                    <button
+                  {(c.replies?.length > 0) && (
+                <button
                       style={{ background: 'none', color: '#1e90ff', border: 'none', cursor: 'pointer', fontSize: '0.95em' }}
-                      onClick={() => handleToggleReplies(c._id)}
-                    >
-                      {openReplies[c._id] ? 'Hide Replies' : 'View Replies'}
-                    </button>
+                  onClick={() => handleToggleReplies(c._id)}
+                >
+                  {openReplies[c._id] ? 'Hide Replies' : 'View Replies'}
+                </button>
                   )}
                 </div>
                 {/* Show reply input below parent comment if active */}
@@ -273,16 +282,25 @@ function CommentOverlay({ open, onClose, track }) {
                 {/* Replies: only two levels of indentation, all descendants flat under each direct reply */}
                 {openReplies[c._id] && (
                   <div style={{ marginLeft: '1.2rem', marginTop: '0.5rem' }}>
-                    {(commentsByParent[c._id] || []).map(reply => (
+                    {(c.replies || []).map(reply => (
                       <div key={reply._id} style={{ marginBottom: '0.7rem' }}>
                         <b style={{ color: '#1db954' }}>{reply.user?.name || 'User'}</b>
-                        <div style={{ color: '#fff' }}>{renderReplyText(reply.text)}</div>
+                        <div style={{ color: '#fff' }}>{renderReplyText(reply.content ?? reply.text)}</div>
                         <button
                           style={{ background: 'none', color: '#1e90ff', border: 'none', cursor: 'pointer', fontSize: '0.92em', marginLeft: '0.5rem' }}
                           onClick={() => handleReplyToReply(c._id, reply._id, reply.user?.name || 'User')}
                         >
                           Reply
                         </button>
+                        {/* Toggle descendants button */}
+                        {(reply.descendants && reply.descendants.length > 0) && (
+                          <button
+                            style={{ background: 'none', color: '#1e90ff', border: 'none', cursor: 'pointer', fontSize: '0.92em', marginLeft: '0.5rem' }}
+                            onClick={() => handleToggleDescendants(reply._id)}
+                          >
+                            {openDescendants[reply._id] ? 'Hide Replies' : 'View Replies'}
+                          </button>
+                        )}
                         {activeReplyInputId === reply._id && (
                           <div style={{ marginLeft: '1.2rem', marginTop: '0.5rem' }}>
                             <textarea
@@ -301,11 +319,11 @@ function CommentOverlay({ open, onClose, track }) {
                             </button>
                           </div>
                         )}
-                        {/* Render all direct children of this reply (flat, no further nesting) */}
-                        {(commentsByParent[reply._id] || []).map(descendant => (
+                        {/* Render all descendants of this reply (flat, no further nesting) with toggle */}
+                        {openDescendants[reply._id] && (reply.descendants || []).map(descendant => (
                           <div key={descendant._id} style={{ marginLeft: '1.2rem', marginTop: '0.5rem', marginBottom: '0.7rem', background: 'rgba(30,200,30,0.08)', borderRadius: '4px', padding: '0.3rem 0.5rem' }}>
                             <b style={{ color: '#1db954' }}>{descendant.user?.name || 'User'}</b>
-                            <div style={{ color: '#fff' }}>{renderReplyText(descendant.text)}</div>
+                            <div style={{ color: '#fff' }}>{renderReplyText(descendant.content ?? descendant.text)}</div>
                             <button
                               style={{ background: 'none', color: '#1e90ff', border: 'none', cursor: 'pointer', fontSize: '0.92em', marginLeft: '0.5rem' }}
                               onClick={() => handleReplyToReply(reply._id, descendant._id, descendant.user?.name || 'User')}

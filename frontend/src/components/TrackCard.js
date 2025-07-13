@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 const TrackCard = React.memo(function TrackCard({ track, isSelected, onSelect, onOpenComments }) {
+  console.log('rendertrackcard');
+
   const [liked, setLiked] = useState(false);
   const [loading, setLoading] = useState(false);
 

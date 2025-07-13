@@ -1,3 +1,5 @@
+const dotenv = require('dotenv');
+dotenv.config({ path: require('path').join(__dirname, '../../.env') });
 const mongoose = require('mongoose');
 
 const connectDB = async () => {
