@@ -10,7 +10,6 @@ import AuthContainer from './pages/AuthContainer';
 import BrowsePage from './pages/BrowsePage';
 import ArtistDashboard from './pages/ArtistDashboard';
 import AdminDashboard from './pages/AdminDashboard';
-import TempAdminLogin from './pages/TempAdminLogin';
 import Profile from './pages/Profile';
 import NotFound from './pages/NotFound';
 
@@ -38,9 +37,6 @@ function App() {
               
               {/* Common routes */}
               <Route path="/browse" element={<BrowsePage />} />
-              
-              {/* Temporary Admin Login Route */}
-              <Route path="/admin/login" element={<TempAdminLogin />} />
               
               {/* Protected routes */}
               <Route

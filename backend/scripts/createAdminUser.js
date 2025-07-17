@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
+const bcrypt = require('bcrypt');
 const User = require('../src/models/User');
 const connectDB = require('../src/config/db');
 
@@ -9,29 +10,31 @@ const createAdminUser = async () => {
   try {
     await connectDB();
 
-    const adminEmail = process.env.TEMP_ADMIN_EMAIL || 'admin@example.com';
-    const adminPassword = process.env.TEMP_ADMIN_PASSWORD || 'adminpassword';
-    
-    // Note: We are not setting the password here, as the temporary login uses hardcoded password check.
-    // We just need to ensure a user with the correct email and role exists.
+    const adminEmail = process.env.ADMIN_EMAIL;
+    const adminPassword = process.env.ADMIN_PASSWORD;
+    const adminName = process.env.ADMIN_NAME || 'Admin User';
+
+    if (!adminEmail || !adminPassword) {
+      console.error('ADMIN_EMAIL and ADMIN_PASSWORD environment variables are required.');
+      process.exit(1);
+    }
+
     let adminUser = await User.findOne({ email: adminEmail });
 
     if (adminUser) {
-      console.log(`User with email ${adminEmail} already exists.`);
-      // Ensure the role is admin if it's not already
       if (adminUser.role !== 'admin') {
         adminUser.role = 'admin';
         await adminUser.save();
         console.log(`Updated user ${adminEmail} role to admin.`);
+      } else {
+        console.log(`Admin user with email ${adminEmail} already exists.`);
       }
     } else {
-      // If user doesn't exist, create a new one.
-      // For simplicity, we are setting a basic password. The temporary login still checks hardcoded password.
-      // In a real scenario, you would hash this password.
+      const hashedPassword = await bcrypt.hash(adminPassword, 12);
       adminUser = new User({
-        name: 'Admin User',
+        name: adminName,
         email: adminEmail,
-        password: 'password123', // A placeholder password, not used by temporary login's password check
+        password: hashedPassword,
         role: 'admin',
       });
       await adminUser.save();
@@ -40,7 +43,6 @@ const createAdminUser = async () => {
 
     console.log('Admin user setup complete.');
     mongoose.connection.close();
-    
   } catch (error) {
     console.error('Error setting up admin user:', error);
     mongoose.connection.close();

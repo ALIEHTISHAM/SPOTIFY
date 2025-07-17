@@ -1,3 +1,4 @@
+// TODO: This file contains dummy data for development only. Replace with real API call before production.
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import ArtistCard from '../components/ArtistCard';

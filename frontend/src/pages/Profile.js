@@ -13,14 +13,7 @@ const Profile = () => {
     email: user?.email || '',
   });
 
-  // Add debug logs
-  useEffect(() => {
-    console.log('Profile - Subscription state:', {
-      hasSubscription,
-      subscriptionLoading,
-      user
-    });
-  }, [hasSubscription, subscriptionLoading, user]);
+  // Remove all console.log statements
 
   const handleChange = (e) => {
     const { name, value } = e.target;

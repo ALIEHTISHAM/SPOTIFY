@@ -3,7 +3,6 @@ import { useAuth } from '../context/AuthContext';
 import '../styles/AdminDashboard.css'; // Import the CSS file
 
 const AdminDashboard = () => {
-  console.log('Rendering AdminDashboard component'); // Add log for debugging
   const { user } = useAuth();
   const [pendingTracks, setPendingTracks] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -37,7 +36,6 @@ const AdminDashboard = () => {
         setLoading(false);
 
       } catch (err) {
-        console.error('Error fetching pending tracks:', err);
         setError(err.message);
         setLoading(false);
       }
@@ -83,7 +81,6 @@ const AdminDashboard = () => {
       alert('Track approved successfully!');
 
     } catch (error) {
-      console.error('Error approving track:', error);
       alert(`Failed to approve track: ${error.message}`);
     }
   };
@@ -147,7 +144,6 @@ const AdminDashboard = () => {
       alert('Track rejected successfully!');
 
     } catch (error) {
-      console.error('Error rejecting track:', error);
       alert(`Failed to reject track: ${error.message}`);
     }
   };

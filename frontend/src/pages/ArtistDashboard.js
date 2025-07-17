@@ -29,11 +29,10 @@ const ArtistDashboard = () => {
         });
         if (response.ok) {
           const data = await response.json();
-          console.log('Received tracks data:', data);
           setUploadedTracks(data);
         }
       } catch (error) {
-        console.error('Error fetching tracks:', error);
+        // console.error('Error fetching tracks:', error);
       }
     };
 
@@ -94,7 +93,7 @@ const ArtistDashboard = () => {
         coverImage: null
       });
     } catch (error) {
-      console.error('Upload error:', error);
+      // console.error('Upload error:', error);
       alert(error.message || 'Failed to upload track. Please try again.');
     } finally {
       setIsUploading(false);
@@ -184,20 +183,13 @@ const ArtistDashboard = () => {
         <h2>Your Tracks</h2>
         <div className="tracks-grid">
           {uploadedTracks.map(track => {
-            // Log the raw track data
-            console.log('Track data:', {
-              id: track._id,
-              title: track.title,
-              rawCoverImage: track.coverImage
-            });
+            // Remove all console.log and console.error statements
 
             // Construct and log the image URL
             const imageUrl = `http://localhost:5000/${track.coverImage}`;
-            console.log('Constructed image URL:', imageUrl);
 
             // Construct and log the audio URL
             const audioUrl = `http://localhost:5000/${track.audioFile}`;
-            console.log('Constructed audio URL:', audioUrl);
 
             return (
               <div key={track._id} className="track-card">
@@ -207,13 +199,6 @@ const ArtistDashboard = () => {
                     alt={track.title} 
                     className="track-cover"
                     onError={(e) => {
-                      console.error('Image load error for:', {
-                        trackId: track._id,
-                        trackTitle: track.title,
-                        attemptedUrl: imageUrl,
-                        rawPath: track.coverImage,
-                        error: e.nativeEvent
-                      });
                       e.target.onerror = null;
                       e.target.src = '/default-cover.png';
                     }}

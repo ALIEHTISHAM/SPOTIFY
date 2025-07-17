@@ -174,14 +174,6 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
-  // New function to set auth data manually (for temporary admin login)
-  const setAuthData = (token, userData) => {
-    localStorage.setItem('token', token);
-    localStorage.setItem('user', JSON.stringify(userData));
-    setIsAuthenticated(true);
-    setUser(userData);
-  };
-
   const value = {
     isAuthenticated,
     user,
@@ -191,7 +183,6 @@ export const AuthProvider = ({ children }) => {
     loginArtist,
     registerArtist,
     logout,
-    setAuthData,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

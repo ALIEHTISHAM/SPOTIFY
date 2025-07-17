@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 const TrackCard = React.memo(function TrackCard({ track, isSelected, onSelect, onOpenComments }) {
-  console.log('rendertrackcard');
 
   const [liked, setLiked] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -26,7 +25,6 @@ const TrackCard = React.memo(function TrackCard({ track, isSelected, onSelect, o
   const handleLike = async (e) => {
     e.stopPropagation(); // Prevent triggering play/select
     setLoading(true);
-    console.log('Like button clicked for trackId:', track._id);
     try {
       const token = localStorage.getItem('token');
       if (!liked) {
@@ -41,14 +39,12 @@ const TrackCard = React.memo(function TrackCard({ track, isSelected, onSelect, o
         setLiked(false);
       }
     } catch (err) {
-      console.error('Error updating like status:', err);
       alert(err.response?.data?.message || 'Error updating like status.');
     } finally {
       setLoading(false);
     }
   };
 
-  console.log('Rendering track card:', track.title, 'Selected:', isSelected);
   return (
     <div
       className={`track-card ${isSelected ? 'playing' : ''}`}

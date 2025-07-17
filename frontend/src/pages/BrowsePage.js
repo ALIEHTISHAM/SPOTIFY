@@ -7,8 +7,6 @@ import AudioPlayer from '../components/AudioPlayer';
 import TrackList from '../components/TrackList';
 
 const BrowsePage = React.memo(() => {
-  console.log('renderingbrowsepage');
-
   const { hasSubscription, createCheckoutSession, loading: subscriptionLoading, subscriptionDetails } = useSubscription();
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();

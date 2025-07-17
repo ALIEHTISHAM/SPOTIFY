@@ -8,14 +8,7 @@ const ProfilePage = () => {
   const { user } = useAuth();
   const { hasSubscription, loading: subscriptionLoading } = useSubscription();
 
-  // Add debug logs
-  useEffect(() => {
-    console.log('ProfilePage - Subscription state:', {
-      hasSubscription,
-      subscriptionLoading,
-      user
-    });
-  }, [hasSubscription, subscriptionLoading, user]);
+  // Remove all console.log statements
 
   if (!user) {
     return <div>Please log in to view your profile</div>;
