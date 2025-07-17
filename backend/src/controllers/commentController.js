@@ -319,7 +319,7 @@ async function getTrackCommentsHierarchicalAggregated(req, res) {
 
     const topLevel = [];
     comments.forEach(c => {
-      if (!c.parent) {
+      if (!c.paenrt) {
         topLevel.push(commentMap[c._id]);
       } else {
         const parent = commentMap[c.parent];
