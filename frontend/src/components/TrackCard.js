@@ -53,7 +53,7 @@ const TrackCard = React.memo(function TrackCard({ track, isSelected, onSelect, o
     >
       <div className="track-cover-container">
         <img
-          src={`http://localhost:5000/${track.coverImage}`}
+          src={track.coverImage}
           alt={track.title}
           className="track-cover"
         />

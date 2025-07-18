@@ -30,15 +30,16 @@ const createAdminUser = async () => {
         console.log(`Admin user with email ${adminEmail} already exists.`);
       }
     } else {
-      const hashedPassword = await bcrypt.hash(adminPassword, 12);
+      // Do NOT hash the password here; let the User model's pre-save hook handle it
       adminUser = new User({
         name: adminName,
         email: adminEmail,
-        password: hashedPassword,
+        password: adminPassword, // plain text, will be hashed by pre-save
         role: 'admin',
       });
       await adminUser.save();
       console.log(`Created new admin user with email ${adminEmail}.`);
+      console.log(adminPassword)
     }
 
     console.log('Admin user setup complete.');

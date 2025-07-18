@@ -2,41 +2,50 @@ const Track = require('../models/Track');
 const User = require('../models/User');
 const path = require('path');
 const logger = require('../logger');
+const AWS = require('aws-sdk');
+const fs = require('fs');
+require('dotenv').config();
+
+const s3 = new AWS.S3({
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  region: process.env.AWS_REGION,
+});
+
+// Helper to upload a file to S3
+async function uploadFileToS3(file, folder) {
+  const fileContent = fs.readFileSync(file.path);
+  const fileName = `${folder}/${Date.now()}_${file.originalname}`;
+  const params = {
+    Bucket: process.env.S3_BUCKET_NAME,
+    Key: fileName,
+    Body: fileContent,
+    ContentType: file.mimetype,
+    // ACL: 'public-read', // Removed for compatibility with Bucket owner enforced
+  };
+  const data = await s3.upload(params).promise();
+  return data.Location; // S3 URL
+}
 
 // Upload a new track
 const uploadTrack = async (req, res) => {
   try {
     const { title, genre } = req.body;
-    
-    // Log the full file information
-    console.log('File upload details:', {
-      audioFile: {
-        originalname: req.files['audioFile'][0].originalname,
-        path: req.files['audioFile'][0].path,
-        filename: req.files['audioFile'][0].filename
-      },
-      coverImage: {
-        originalname: req.files['coverImage'][0].originalname,
-        path: req.files['coverImage'][0].path,
-        filename: req.files['coverImage'][0].filename
-      }
-    });
+    // Upload files to S3
+    const audioFileS3Url = await uploadFileToS3(req.files['audioFile'][0], 'audio');
+    const coverImageS3Url = await uploadFileToS3(req.files['coverImage'][0], 'images');
 
-    // Store just the filename for the database
-    const audioFile = `uploads/audio/${req.files['audioFile'][0].filename}`;
-    const coverImage = `uploads/images/${req.files['coverImage'][0].filename}`;
-
-    // Create new track
+    // Create new track with S3 URLs
     const track = new Track({
       title,
       artist: req.user._id,
       genre,
-      audioFile,
-      coverImage
+      audioFile: audioFileS3Url,
+      coverImage: coverImageS3Url
     });
 
     await track.save();
-    console.log('Saved track with paths:', {
+    logger.info('Saved track with S3 URLs:', {
       audioFile: track.audioFile,
       coverImage: track.coverImage
     });

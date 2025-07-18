@@ -94,7 +94,7 @@ const AudioPlayer = React.memo(function AudioPlayer({ initialVolume = 1 }) {
       <div className="player-info">
         <div className="track-cover-container">
           <img
-            src={selectedTrack.coverImage ? `http://localhost:5000/${selectedTrack.coverImage}` : ''}
+            src={selectedTrack.coverImage || ''}
             alt={selectedTrack.title}
             className="track-cover"
           />
@@ -136,7 +136,7 @@ const AudioPlayer = React.memo(function AudioPlayer({ initialVolume = 1 }) {
       </div>
       <audio
         ref={audioRef}
-        src={`http://localhost:5000/${selectedTrack.audioFile}`}
+        src={selectedTrack.audioFile}
         onLoadedMetadata={handleLoadedMetadata}
         onTimeUpdate={handleTimeUpdate}
         onEnded={handleEnded}

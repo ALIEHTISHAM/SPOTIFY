@@ -186,10 +186,10 @@ const ArtistDashboard = () => {
             // Remove all console.log and console.error statements
 
             // Construct and log the image URL
-            const imageUrl = `http://localhost:5000/${track.coverImage}`;
+            const imageUrl = track.coverImage;
 
             // Construct and log the audio URL
-            const audioUrl = `http://localhost:5000/${track.audioFile}`;
+            const audioUrl = track.audioFile;
 
             return (
               <div key={track._id} className="track-card">

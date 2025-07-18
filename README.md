@@ -1,127 +1,33 @@
 
 
-```markdown
-```
-# Music Streaming Platform
+## Admin User Creation & Secure Login
 
-A full-stack music streaming platform with user, artist, and admin roles.
+### Creating an Admin User
 
-## Features
+To securely create an admin user, use the provided script. This ensures the password is hashed and the admin role is set correctly.
 
-- User authentication and authorization
-- Music streaming for subscribed users
-- Artist music upload and management
-- Admin approval system for music tracks
-- Stripe integration for subscription payments
+1. **Set Environment Variables**
+   - In your `.env` file (or your environment), set:
+     - `ADMIN_EMAIL` (e.g., `admin@example.com`)
+     - `ADMIN_PASSWORD` (choose a strong password)
+     - `ADMIN_NAME` (optional, defaults to 'Admin User')
 
-## Project Structure
-
-```
-music-streaming-platform/
-├── frontend/          # React frontend application
-└── backend/           # Node.js/Express backend server
-
-```
-## Prerequisites
-
-- Node.js (v14 or higher)
-- MongoDB
-- Stripe account
-
-## Setup Instructions
-
-### Backend Setup
-
-1. Navigate to the backend directory:
+2. **Run the Admin Creation Script**
    ```bash
-   cd backend
+   node backend/scripts/createAdminUser.js
    ```
+   - This will create (or update) the admin user in your database.
+   - The password will be securely hashed using the same logic as normal users.
 
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
+3. **Login as Admin**
+   - Go to the login page and enter the admin email and password you set above.
+   - Upon successful login, you will be redirected to the admin dashboard if your user has the admin role.
 
-3. Create a .env file with the following variables:
-   ```
-   PORT=5000
-   MONGODB_URI=your_mongodb_uri
-   JWT_SECRET=your_jwt_secret
-   STRIPE_SECRET_KEY=your_stripe_secret_key
-   ```
+### Security Notes
+- The admin creation script is idempotent: if the user exists, it will update their role to admin.
+- Never commit your `.env` file or admin credentials to version control.
+- Only users with the `admin` role can access admin routes and the admin dashboard.
 
-4. Start the development server:
-   ```bash
-   npm run dev
-   ```
-
-### Stripe Webhook Setup
-
-To test Stripe webhooks locally, use the Stripe CLI to forward events to your local backend server. Run the following command in your terminal:
-
-```bash
-.\stripe.exe listen --forward-to localhost:5000/api/subscription/webhook
-```
-
-This will forward any Stripe event (such as successful payments or subscription updates) to your local webhook endpoint.
-
-### Frontend Setup
-
-1. Navigate to the frontend directory:
-   ```bash
-   cd frontend
-   ```
-
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-
-3. Create a .env file with the following variables:
-   ```
-   REACT_APP_API_URL=http://localhost:5000
-   REACT_APP_STRIPE_PUBLIC_KEY=your_stripe_public_key
-   ```
-
-4. Start the development server:
-   ```bash
-   npm start
-   ```
-
-## User Roles
-
-1. End User (Listener)
-   - Register and browse music
-   - Subscribe to access music streaming
-   - View track information
-
-2. Artist
-   - Register as an artist
-   - Upload music tracks
-   - View upload status
-
-3. Admin
-   - Review and approve/reject tracks
-   - Manage content
-
-## Technologies Used
-
-- Frontend:
-  - React
-  - React Router
-  - Axios
-  - Stripe.js
-
-- Backend:
-  - Node.js
-  - Express
-  - MongoDB
-  - JWT Authentication
-  - Stripe API
-  - Multer (file uploads)
-
-## License
-
-MIT
-```
-
+### Troubleshooting
+- If you forget the admin password, update the `ADMIN_PASSWORD` in your `.env` and re-run the script to reset it.
+- If you see a password mismatch error, ensure you are using the correct password and that the script was run after the latest code update.
