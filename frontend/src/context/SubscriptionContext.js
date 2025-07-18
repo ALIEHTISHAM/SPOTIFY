@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 import { loadStripe } from '@stripe/stripe-js';
 import { useAuth } from './AuthContext';
+import API_URL from '../config';
 
 // Create the context
 const SubscriptionContext = createContext();
@@ -45,7 +46,7 @@ export const SubscriptionProvider = ({ children }) => {
         return;
       }
 
-      const response = await axios.get('http://localhost:5000/api/subscription/status', {
+      const response = await axios.get(`${API_URL}/subscription/status`, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
@@ -84,7 +85,7 @@ export const SubscriptionProvider = ({ children }) => {
       }
 
       const response = await axios.post(
-        'http://localhost:5000/api/subscription/create-checkout-session',
+        `${API_URL}/subscription/create-checkout-session`,
         {},
         {
           headers: { Authorization: `Bearer ${token}` }
@@ -110,7 +111,7 @@ export const SubscriptionProvider = ({ children }) => {
       }
 
       const response = await axios.post(
-        'http://localhost:5000/api/subscription/cancel',
+        `${API_URL}/subscription/cancel`,
         {},
         {
           headers: { Authorization: `Bearer ${token}` }

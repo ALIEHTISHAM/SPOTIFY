@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import '../styles/ArtistDashboard.css';
+import API_URL from '../config';
 
 const ArtistDashboard = () => {
   const { user } = useAuth();
@@ -22,7 +23,7 @@ const ArtistDashboard = () => {
           throw new Error('No authentication token found');
         }
 
-        const response = await fetch('http://localhost:5000/api/artist/tracks', {
+        const response = await fetch(`${API_URL}/artist/tracks`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -71,7 +72,7 @@ const ArtistDashboard = () => {
         throw new Error('No authentication token found');
       }
 
-      const response = await fetch('http://localhost:5000/api/artist/upload', {
+      const response = await fetch(`${API_URL}/artist/upload`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`

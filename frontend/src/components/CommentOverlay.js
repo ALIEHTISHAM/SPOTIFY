@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import axios from 'axios';
+import API_URL from '../config';
 
 const overlayStyle = {
   position: 'fixed',
@@ -90,7 +91,7 @@ function CommentOverlay({ open, onClose, track }) {
     if (!track?._id) return;
     setLoading(true);
     try {
-      const res = await axios.get(`http://localhost:5000/api/comments/track/${track._id}/comments-hierarchical`);
+      const res = await axios.get(`${API_URL}/comments/track/${track._id}/comments-hierarchical`);
       setComments(res.data.comments || []);
       setArtist(res.data.artist || null);
       setTrackTitle(res.data.trackTitle || '');
@@ -115,7 +116,7 @@ function CommentOverlay({ open, onClose, track }) {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
-      await axios.post(`http://localhost:5000/api/comments/track/${track._id}/add`, {
+      await axios.post(`${API_URL}/comments/track/${track._id}/add`, {
         text: newComment.trim(),
       }, { headers: { Authorization: `Bearer ${token}` } });
       setNewComment('');
@@ -134,7 +135,7 @@ function CommentOverlay({ open, onClose, track }) {
     setReplying(r => ({ ...r, [parentId]: true }));
     try {
       const token = localStorage.getItem('token');
-      await axios.post(`http://localhost:5000/api/comments/comment/${parentId}/reply`, {
+      await axios.post(`${API_URL}/comments/comment/${parentId}/reply`, {
         trackId: track._id,
         text: replyText,
       }, { headers: { Authorization: `Bearer ${token}` } });

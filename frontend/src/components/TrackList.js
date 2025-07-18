@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
+import API_URL from '../config';
 import { useTrack } from '../context/TrackContext';
 import { useSearchFilter } from '../context/SearchFilterContext';
 import TrackCard from './TrackCard';
@@ -18,8 +19,8 @@ const TrackList = React.memo(function TrackList({ page, setPage, totalPages, set
   const [allGenres, setAllGenres] = useState([]);
 
   useEffect(() => {
-    axios.get('http://localhost:5000/api/publicTracks/artists').then(res => setAllArtists(res.data.artists));
-    axios.get('http://localhost:5000/api/publicTracks/genres').then(res => setAllGenres(res.data.genres));
+    axios.get(`${API_URL}/publicTracks/artists`).then(res => setAllArtists(res.data.artists));
+    axios.get(`${API_URL}/publicTracks/genres`).then(res => setAllGenres(res.data.genres));
   }, []);
 
   // Reset to page 1 on filter/search change
@@ -37,7 +38,7 @@ const TrackList = React.memo(function TrackList({ page, setPage, totalPages, set
         if (searchQuery) params.q = searchQuery;
         if (selectedGenre) params.genre = selectedGenre;
         if (selectedArtist) params.artist = selectedArtist;
-        const response = await axios.get('http://localhost:5000/api/publicTracks/approved', { params });
+        const response = await axios.get(`${API_URL}/publicTracks/approved`, { params });
         setTracks(response.data.tracks);
         setTotalPages(response.data.totalPages);
         setTotal(response.data.total);
