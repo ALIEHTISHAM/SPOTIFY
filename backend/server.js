@@ -8,7 +8,7 @@ if (cluster.isMaster) {
     cluster.fork();
   }
   cluster.on('exit', (worker) => {
-    console.log(`Worker ${worker.process.pid} died. Restarting...`);
+    console.log(`Worker ${worker.process.pid} died. Restarting..`);
     cluster.fork();
   });
 } else {
