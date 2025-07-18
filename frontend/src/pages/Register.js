@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const Register = ({ onSuccess }) => {
   const [formData, setFormData] = useState({
@@ -11,6 +12,7 @@ const Register = ({ onSuccess }) => {
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const { register } = useAuth();
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -111,6 +113,17 @@ const Register = ({ onSuccess }) => {
           Sign up
         </button>
       </form>
+      {/* Auth switch links for mobile */}
+      <div className="auth-links mobile-only">
+        <p>
+          Already have an account?{' '}
+          <span className="auth-switch-link" onClick={() => navigate('/login')}>Sign in</span>
+        </p>
+        <p>
+          Are you an artist?{' '}
+          <span className="auth-switch-link" onClick={() => navigate('/artist/register')}>Register as Artist</span>
+        </p>
+      </div>
     </div>
   );
 };

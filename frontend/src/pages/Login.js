@@ -81,11 +81,11 @@ const Login = () => {
       <div className="auth-links">
         <p>
           Don't have an account?{' '}
-          <a href="/register">Register</a>
+          <span className="auth-switch-link" onClick={() => navigate('/register')}>Register</span>
         </p>
         <p>
           Are you an artist?{' '}
-          <a href="/artist/register">Register as Artist</a>
+          <span className="auth-switch-link" onClick={() => navigate('/artist/register')}>Register as Artist</span>
         </p>
       </div>
     </div>
