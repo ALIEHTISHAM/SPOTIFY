@@ -21,7 +21,7 @@ const AdminDashboard = () => {
           throw new Error('No authentication token found');
         }
 
-        const response = await fetch(`${API_URL}/admin/tracks/pending`, {
+        const response = await fetch(`${API_URL}/api/admin/tracks/pending`, {
           headers: {
             'Authorization': `Bearer ${token}`,
           },
@@ -65,7 +65,7 @@ const AdminDashboard = () => {
   const handleApprove = async (trackId) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`${API_URL}/admin/tracks/${trackId}/approve`, {
+      const response = await fetch(`${API_URL}/api/admin/tracks/${trackId}/approve`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -120,7 +120,7 @@ const AdminDashboard = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`${API_URL}/admin/tracks/${trackId}/reject`, {
+      const response = await fetch(`${API_URL}/api/admin/tracks/${trackId}/reject`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
