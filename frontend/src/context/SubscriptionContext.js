@@ -46,7 +46,7 @@ export const SubscriptionProvider = ({ children }) => {
         return;
       }
 
-      const response = await axios.get(`${API_URL}/subscription/status`, {
+      const response = await axios.get(`${API_URL}/api/subscription/status`, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
@@ -85,7 +85,7 @@ export const SubscriptionProvider = ({ children }) => {
       }
 
       const response = await axios.post(
-        `${API_URL}/subscription/create-checkout-session`,
+        `${API_URL}/api/subscription/create-checkout-session`,
         {},
         {
           headers: { Authorization: `Bearer ${token}` }
@@ -111,7 +111,7 @@ export const SubscriptionProvider = ({ children }) => {
       }
 
       const response = await axios.post(
-        `${API_URL}/subscription/cancel`,
+        `${API_URL}/api/subscription/cancel`,
         {},
         {
           headers: { Authorization: `Bearer ${token}` }
