@@ -81,7 +81,7 @@ body {
   border-radius: 4px 0 0 4px;
   background-color: #2a2a2a;
   color: #fff;
-  width: 200px;
+ 
 }
 
 .search-button {
@@ -873,8 +873,100 @@ cursor: pointer;
 } 
 
 @media (max-width: 768px) {
-  .auth-container.login-mode .form-section,
+  .auth-container.login-mode .form-section, 
   .auth-container.register-mode .form-section {
     transform: none !important;
+  }
+  .auth-buttons{
+flex-direction: column;
+width: 100%;
+  }
+} 
+
+/* Hamburger menu styles */
+.navbar-hamburger {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: #fff;
+  cursor: pointer;
+  margin-left: 1rem;
+  z-index: 1100;
+}
+.hamburger-icon {
+  display: inline-block;
+  font-size: 2rem;
+  line-height: 1;
+}
+
+/* Mobile dropdown menu */
+.navbar-mobile-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  left: 0;
+  background: #222;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  padding: 1rem;
+  z-index: 2000; /* Make sure it's above other content */
+}
+
+.navbar-mobile-menu .navbar-menu {
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+  align-items: flex-end;
+}
+
+.navbar-mobile-menu .navbar-item,
+.navbar-mobile-menu .btn {
+  color: #fff !important;
+  background: #181818;
+  width: 100%;
+  text-align: center;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+  padding: 0.75rem 1rem;
+  display: block;
+  border: none;
+  font-size: 1.05rem;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+  transition: background 0.2s, color 0.2s;
+}
+
+.navbar-mobile-menu .navbar-item:hover,
+.navbar-mobile-menu .btn:hover {
+  background: #282828;
+  color: #1db954;
+}
+
+/* Hide desktop menu and show hamburger on mobile */
+@media (max-width: 768px) {
+  .navbar-menu-wrapper {
+    display: none;
+  }
+  .navbar-hamburger {
+    display: block;
+  }
+  /* Only hide .navbar-menu in the desktop wrapper, not in the mobile menu */
+  .navbar-menu-wrapper .navbar-menu {
+    display: none !important;
+  }
+  .navbar-mobile-menu .navbar-menu {
+    display: flex !important;
+  }
+}
+
+/* Hide mobile menu by default on desktop */
+@media (min-width: 769px) {
+  .navbar-mobile-menu {
+    display: none !important;
+  }
+  .navbar-hamburger {
+    display: none;
   }
 } 

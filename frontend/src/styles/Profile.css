@@ -155,4 +155,32 @@
   .btn {
     width: 100%;
   }
+}
+
+@media (max-width: 480px) {
+  .profile {
+    margin: 0.5rem auto;
+    padding: 0 0.25rem;
+    max-width: 100%;
+  }
+  .profile .card {
+    padding: 0.75rem;
+    width: 100%;
+  }
+  .profile h2 {
+    font-size: 1.2rem;
+    padding-bottom: 0.5rem;
+  }
+  .profile h3 {
+    font-size: 1rem;
+    margin: 1rem 0 0.5rem;
+  }
+  .info-group p {
+    font-size: 1rem;
+    padding: 0.25rem 0;
+  }
+  .btn {
+    font-size: 0.95rem;
+    padding: 0.6rem 1rem;
+  }
 } 

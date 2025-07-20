@@ -389,6 +389,10 @@ section.browse-page {
   .browse-page {
     padding: 1rem 1rem 90px 1rem;
   }
+  .browse-page .tracks-section {
+    width: 100%;
+    padding: 0.5rem;
+  }
 }
 
 @media (max-width: 480px) {
@@ -464,6 +468,10 @@ section.browse-page {
   }
   .browse-page {
     padding-bottom: 200px;
+  }
+  .browse-page .tracks-section {
+    width: 100%;
+    padding: 0.25rem;
   }
 }
 

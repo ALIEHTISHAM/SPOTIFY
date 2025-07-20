@@ -3,9 +3,11 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import ArtistCard from '../components/ArtistCard';
 import styles from '../styles/Home.module.css';
+import { useAuth } from '../context/AuthContext';
 
 const Home = () => {
   const [artists, setArtists] = useState([]);
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
     // TODO: Replace with actual API call to fetch artists
@@ -36,9 +38,11 @@ const Home = () => {
             <Link to="/register" className={styles.primaryButton}>
               <span>▶</span> Get Started
             </Link>
-            <Link to="/login" className={styles.secondaryButton}>
-              Login
-            </Link>
+            {!isAuthenticated && (
+              <Link to="/login" className={styles.secondaryButton}>
+                Login
+              </Link>
+            )}
           </div>
         </div>
       </section>

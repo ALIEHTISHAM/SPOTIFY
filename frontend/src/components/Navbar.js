@@ -49,6 +49,7 @@ const Navbar = React.memo(() => {
   const { isAuthenticated, user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const [menuOpen, setMenuOpen] = useState(false);
 
   // Initialize search term from URL query parameter
   useEffect(() => {
@@ -65,7 +66,10 @@ const Navbar = React.memo(() => {
     navigate('/');
   };
 
-  // handleSearch, handleKeyPress, handleInputChange are now managed by NavbarSearch
+  // Close menu on navigation
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [location.pathname]);
 
   return (
     <nav className="navbar">
@@ -74,7 +78,24 @@ const Navbar = React.memo(() => {
           Music Stream
         </Link>
         <NavbarSearch />
-        <NavbarMenu isAuthenticated={isAuthenticated} user={user} handleLogout={handleLogout} />
+        {/* Hamburger button for mobile */}
+        <button
+          className="navbar-hamburger"
+          aria-label="Open navigation menu"
+          onClick={() => setMenuOpen((open) => !open)}
+        >
+          <span className="hamburger-icon">&#9776;</span>
+        </button>
+        {/* Desktop menu */}
+        <div className="navbar-menu-wrapper">
+          <NavbarMenu isAuthenticated={isAuthenticated} user={user} handleLogout={handleLogout} />
+        </div>
+        {/* Mobile dropdown menu */}
+        {menuOpen && (
+          <div className="navbar-mobile-menu">
+            <NavbarMenu isAuthenticated={isAuthenticated} user={user} handleLogout={handleLogout} />
+          </div>
+        )}
       </div>
     </nav>
   );
