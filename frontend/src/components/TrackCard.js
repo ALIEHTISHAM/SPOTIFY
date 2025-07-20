@@ -12,7 +12,7 @@ const TrackCard = React.memo(function TrackCard({ track, isSelected, onSelect, o
       try {
         const token = localStorage.getItem('token');
         if (!token) return;
-        const res = await axios.get(`${API_URL}/like/check-liked/${track._id}`, {
+        const res = await axios.get(`${API_URL}/api/like/check-liked/${track._id}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setLiked(res.data.liked);
@@ -29,12 +29,12 @@ const TrackCard = React.memo(function TrackCard({ track, isSelected, onSelect, o
     try {
       const token = localStorage.getItem('token');
       if (!liked) {
-        await axios.post(`${API_URL}/like/like`, { trackId: track._id }, {
+        await axios.post(`${API_URL}/api/like/like`, { trackId: track._id }, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setLiked(true);
       } else {
-        await axios.post(`${API_URL}/like/unlike`, { trackId: track._id }, {
+        await axios.post(`${API_URL}/api/like/unlike`, { trackId: track._id }, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setLiked(false);

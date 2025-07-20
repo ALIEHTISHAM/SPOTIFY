@@ -23,7 +23,7 @@ const ArtistDashboard = () => {
           throw new Error('No authentication token found');
         }
 
-        const response = await fetch(`${API_URL}/artist/tracks`, {
+        const response = await fetch(`${API_URL}/api/artist/tracks`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -72,7 +72,7 @@ const ArtistDashboard = () => {
         throw new Error('No authentication token found');
       }
 
-      const response = await fetch(`${API_URL}/artist/upload`, {
+      const response = await fetch(`${API_URL}/api/artist/upload`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
