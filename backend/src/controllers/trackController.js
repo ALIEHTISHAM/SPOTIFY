@@ -14,7 +14,7 @@ const s3 = new AWS.S3({
 
 // Helper to upload a file to S3
 async function uploadFileToS3(file, folder) {
-  const fileContent = fs.readFileSync(file.path);
+  const fileContent = file.buffer; // Use buffer from memoryStorage
   const fileName = `${folder}/${Date.now()}_${file.originalname}`;
   const params = {
     Bucket: process.env.S3_BUCKET_NAME,

@@ -1,21 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
-const path = require('path');
 const { registerArtist, loginArtist } = require('../controllers/artistController');
 const { uploadTrack, getArtistTracks } = require('../controllers/trackController');
 const { auth } = require('../middleware/auth');
 
-// Configure multer for file uploads
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    const uploadPath = file.fieldname === 'audioFile' ? 'uploads/audio' : 'uploads/images';
-    cb(null, uploadPath);
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + path.extname(file.originalname));
-  }
-});
+// Use memoryStorage for multer (no local folders needed)
+const storage = multer.memoryStorage();
 
 const upload = multer({ 
   storage: storage,
