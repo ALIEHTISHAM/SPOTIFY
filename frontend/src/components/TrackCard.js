@@ -4,24 +4,13 @@ import API_URL from '../config';
 
 const TrackCard = React.memo(function TrackCard({ track, isSelected, onSelect, onOpenComments }) {
 
-  const [liked, setLiked] = useState(false);
+  const [liked, setLiked] = useState(track.isLiked || false);
   const [loading, setLoading] = useState(false);
 
+  // Keep the liked state in sync with the prop
   useEffect(() => {
-    const fetchLikeStatus = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        if (!token) return;
-        const res = await axios.get(`${API_URL}/api/like/check-liked/${track._id}`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        setLiked(res.data.liked);
-      } catch (err) {
-        setLiked(false); // fallback
-      }
-    };
-    fetchLikeStatus();
-  }, [track._id]);
+    setLiked(track.isLiked || false);
+  }, [track.isLiked]);
 
   const handleLike = async (e) => {
     e.stopPropagation(); // Prevent triggering play/select

@@ -94,6 +94,7 @@ const getApprovedTracks = async (req, res) => {
     const { q, genre, artist } = req.query;
     const mongoose = require('mongoose');
     const ObjectId = mongoose.Types.ObjectId;
+    const userId = req.user ? new ObjectId(String(req.user._id)) : null;
 
     // Build match conditions
     let matchConditions = [{ status: 'approved' }];
@@ -129,56 +130,86 @@ const getApprovedTracks = async (req, res) => {
       ? { $match: matchConditions[0] }
       : { $match: { $and: matchConditions } };
 
-    // Aggregation pipeline
-    const result = await Track.aggregate([
-      // Apply all filters
-      matchStage,
-      
-      // Sort for pagination
-      { $sort: { uploadDate: -1, _id: 1 } },
-      
-      // Use facet to get both paginated tracks and total count
-      {
-        $facet: {
-          // Get paginated tracks
-          tracks: [
-            { $skip: skip },
-            { $limit: limit },
-            // Lookup artist information
+    // Build the aggregation pipeline step-by-step
+    let pipeline = [];
+
+    // 1. Initial match for tracks
+    pipeline.push(matchStage);
+
+    // 2. Lookup artist information
+    pipeline.push({
+      $lookup: {
+        from: 'users',
+        localField: 'artist',
+        foreignField: '_id',
+        as: 'artistInfo'
+      }
+    });
+    pipeline.push({ $unwind: '$artistInfo' });
+
+    // 3. Conditionally add the 'liked' status check
+    if (userId) {
+      pipeline.push({
+        $lookup: {
+          from: 'likes',
+          let: { trackId: '$_id' },
+          pipeline: [
             {
-              $lookup: {
-                from: 'users',
-                localField: 'artist',
-                foreignField: '_id',
-                as: 'artistInfo'
-              }
-            },
-            { $unwind: '$artistInfo' },
-            // Project the final structure
-            {
-              $project: {
-                _id: 1,
-                title: 1,
-                genre: 1,
-                audioFile: 1,
-                coverImage: 1,
-                uploadDate: 1,
-                status: 1,
-                artist: {
-                  _id: '$artistInfo._id',
-                  name: '$artistInfo.name',
-                  artistProfile: '$artistInfo.artistProfile'
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: [ { $toString: '$track' }, { $toString: '$$trackId' } ] },
+                    { $eq: [ { $toString: '$user' }, userId.toString() ] }
+                  ]
                 }
               }
             }
           ],
-          // Get total count for pagination
-          total: [
-            { $count: 'count' }
-          ]
+          as: 'userLike'
+        }
+      });
+      pipeline.push({
+        $addFields: {
+          isLiked: { $gt: [{ $size: '$userLike' }, 0] }
+        }
+      });
+    }
+    
+    // 4. Project the final shape of the documents
+    pipeline.push({
+      $project: {
+        _id: 1,
+        title: 1,
+        genre: 1,
+        audioFile: 1,
+        coverImage: 1,
+        uploadDate: 1,
+        status: 1,
+        isLiked: { $ifNull: ['$isLiked', false] }, // Default to false if not logged in
+        artist: {
+          _id: '$artistInfo._id',
+          name: '$artistInfo.name',
+          artistProfile: '$artistInfo.artistProfile'
         }
       }
-    ]);
+    });
+
+    // 5. Use a final facet for pagination and total count
+    pipeline.push({
+      $facet: {
+        tracks: [
+          { $sort: { uploadDate: -1, _id: 1 } },
+          { $skip: skip },
+          { $limit: limit }
+        ],
+        total: [
+          { $count: 'count' }
+        ]
+      }
+    });
+
+
+    const result = await Track.aggregate(pipeline);
 
     const tracks = result[0]?.tracks || [];
     const total = result[0]?.total[0]?.count || 0;
@@ -188,6 +219,7 @@ const getApprovedTracks = async (req, res) => {
       total,
       page,
       totalPages: Math.ceil(total / limit),
+      pageSize: tracks.length,
       method: 'aggregation' // To distinguish from the original method
     });
   } catch (error) {

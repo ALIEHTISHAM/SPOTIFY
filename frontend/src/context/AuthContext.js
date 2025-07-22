@@ -61,6 +61,7 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (email, password) => {
+    setLoading(true);
     try {
       const response = await fetch(`${API_URL}/api/auth/login`, {
         method: 'POST',
@@ -84,10 +85,13 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       console.error('Login error:', error);
       throw error;
+    } finally {
+      setLoading(false);
     }
   };
 
   const register = async (userData) => {
+    setLoading(true);
     try {
       const response = await fetch(`${API_URL}/api/auth/register`, {
         method: 'POST',
@@ -111,10 +115,13 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       console.error('Registration error:', error);
       throw error;
+    } finally {
+      setLoading(false);
     }
   };
 
   const loginArtist = async (credentials) => {
+    setLoading(true);
     try {
       const response = await fetch(`${API_URL}/api/artist/login`, {
         method: 'POST',
@@ -138,10 +145,13 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       console.error('Artist login error:', error);
       throw error;
+    } finally {
+      setLoading(false);
     }
   };
 
   const registerArtist = async (artistData) => {
+    setLoading(true);
     try {
       const response = await fetch(`${API_URL}/api/artist/register`, {
         method: 'POST',
@@ -165,6 +175,8 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       console.error('Artist registration error:', error);
       throw error;
+    } finally {
+      setLoading(false);
     }
   };
 

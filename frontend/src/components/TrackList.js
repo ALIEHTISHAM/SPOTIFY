@@ -34,11 +34,20 @@ const TrackList = React.memo(function TrackList({ page, setPage, totalPages, set
     const fetchTracks = async () => {
       setLoading(true);
       try {
+        const token = localStorage.getItem('token');
+        const headers = {};
+        if (token) {
+          headers.Authorization = `Bearer ${token}`;
+        }
+
         const params = { page, limit: 20 };
         if (searchQuery) params.q = searchQuery;
         if (selectedGenre) params.genre = selectedGenre;
         if (selectedArtist) params.artist = selectedArtist;
-        const response = await axios.get(`${API_URL}/api/publicTracks/approved`, { params });
+        const response = await axios.get(`${API_URL}/api/publicTracks/approved`, {
+          params,
+          headers
+        });
         setTracks(response.data.tracks);
         setTotalPages(response.data.totalPages);
         setTotal(response.data.total);
@@ -85,7 +94,11 @@ const TrackList = React.memo(function TrackList({ page, setPage, totalPages, set
   // Determine if filters should be shown based on searchQuery
   const showFilters = !!searchQuery;
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return (
+    <div className="loader-container">
+      <div className="loader"></div>
+    </div>
+  );
   if (error) return <div className="error">{error}</div>;
 
   return (

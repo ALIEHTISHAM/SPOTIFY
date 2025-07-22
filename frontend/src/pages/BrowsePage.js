@@ -22,13 +22,15 @@ const BrowsePage = React.memo(() => {
     createCheckoutSession();
   };
 
-  if (subscriptionLoading) return <div>Loading...</div>;
+  if (subscriptionLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="browse-page">
       <div className="browse-header">
         {isAuthenticated && !hasSubscription && (
-          <button 
+          <button
             className="subscribe-button"
             onClick={handleSubscribeClick}
           >
@@ -62,4 +64,4 @@ const BrowsePage = React.memo(() => {
   );
 });
 
-export default BrowsePage; 
+export default BrowsePage;
