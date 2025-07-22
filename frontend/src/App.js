@@ -56,7 +56,11 @@ function App() {
   const { loading } = useAuth();
 
   if (loading) {
-    return <div>Loading Application...</div>; // Or a loading spinner
+    return (
+      <div className="loader-container">
+        <div className="loader"></div>
+      </div>
+    );
   }
 
   return <AppContent />;

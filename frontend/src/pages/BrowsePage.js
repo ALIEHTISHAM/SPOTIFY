@@ -23,7 +23,11 @@ const BrowsePage = React.memo(() => {
   };
 
   if (subscriptionLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="loader-container">
+        <div className="loader"></div>
+      </div>
+    );
   }
 
   return (
