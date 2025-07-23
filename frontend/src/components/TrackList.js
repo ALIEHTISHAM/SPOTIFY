@@ -6,6 +6,7 @@ import { useSearchFilter } from '../context/SearchFilterContext';
 import TrackCard from './TrackCard';
 import CommentOverlay from './CommentOverlay';
 import FilterBar from './FilterBar';
+import Loader from './Loader';
 
 const TrackList = React.memo(function TrackList({ page, setPage, totalPages, setTotalPages, total, setTotal, hasSubscription, subscriptionDetails }) {
   const { searchQuery, selectedGenre, selectedArtist, setSearchQuery, setSelectedGenre, setSelectedArtist } = useSearchFilter();
@@ -94,11 +95,7 @@ const TrackList = React.memo(function TrackList({ page, setPage, totalPages, set
   // Determine if filters should be shown based on searchQuery
   const showFilters = !!searchQuery;
 
-  if (loading) return (
-    <div className="loader-container">
-      <div className="loader"></div>
-    </div>
-  );
+  if (loading) return <Loader />;
   if (error) return <div className="error">{error}</div>;
 
   return (

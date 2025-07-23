@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import '../styles/BrowsePage.css';
 import AudioPlayer from '../components/AudioPlayer';
 import TrackList from '../components/TrackList';
+import Loader from '../components/Loader';
 
 const BrowsePage = React.memo(() => {
   const { hasSubscription, createCheckoutSession, loading: subscriptionLoading, subscriptionDetails } = useSubscription();
@@ -23,11 +24,7 @@ const BrowsePage = React.memo(() => {
   };
 
   if (subscriptionLoading) {
-    return (
-      <div className="loader-container">
-        <div className="loader"></div>
-      </div>
-    );
+    return <Loader />;
   }
 
   return (

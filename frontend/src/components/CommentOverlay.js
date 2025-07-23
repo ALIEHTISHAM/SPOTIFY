@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import axios from 'axios';
 import API_URL from '../config';
+import Loader from './Loader';
 
 const overlayStyle = {
   position: 'fixed',
@@ -237,11 +238,7 @@ function CommentOverlay({ open, onClose, track }) {
           <button onClick={onClose} style={closeBtnStyle} aria-label="Close">×</button>
         </div>
         <div style={commentsListStyle}>
-          {loading ? (
-            <div className="loader-container">
-              <div className="loader"></div>
-            </div>
-          ) : null}
+          {loading ? <Loader /> : null}
           {!loading && comments.length === 0 ? (
             <p style={{ color: '#aaa' }}>No comments yet. Be the first to comment!</p>
           ) : (

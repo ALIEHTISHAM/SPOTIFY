@@ -18,6 +18,7 @@ import NotFound from './pages/NotFound';
 import Navbar from './components/Navbar';
 import PrivateRoute from './components/PrivateRoute';
 import Footer from './components/Footer';
+import Loader from './components/Loader';
 
 // This component contains the main app layout and routing
 const AppContent = () => {
@@ -56,11 +57,7 @@ function App() {
   const { loading } = useAuth();
 
   if (loading) {
-    return (
-      <div className="loader-container">
-        <div className="loader"></div>
-      </div>
-    );
+    return <Loader />;
   }
 
   return <AppContent />;
